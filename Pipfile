@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 psutil = "*"
 ifcfg = "*"
+speedtest-cli = "*"
 
 [dev-packages]
 autopep8 = "*"

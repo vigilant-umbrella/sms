@@ -3,6 +3,7 @@ import ifcfg
 import os
 import platform
 import psutil
+import speedtest
 import time
 
 
@@ -127,6 +128,20 @@ class Get:
             result.append(user_dict)
 
         return tuple(result)
+
+
+def test_speed():
+    result = {}
+
+    s = speedtest.Speedtest()
+    s.download()
+    s.upload()
+    speed_dict = s.results.dict()
+
+    result['down_speed'] = speed_dict['download']
+    result['up_speed'] = speed_dict['upload']
+
+    return result
 
 
 if __name__ == '__main__':
