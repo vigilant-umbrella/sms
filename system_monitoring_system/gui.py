@@ -40,8 +40,8 @@ def layout(settings):
     email = settings.get("email", "None")
     settings = [
         [sg.Text("Its the settings menu")],
-        [sg.Text("Current email: "), sg.Text(
-            email, key="-email-", size=(200, 1))],
+        [sg.Text("Current email(s): "), sg.Listbox(
+            email, key="-email-", size=(100, 5), enable_events=True)],
         [
             sg.Button("Set notification limit"),
             sg.Button("Change email"),
@@ -93,7 +93,7 @@ def authenticate(settings):
     while True:
         event, values = window.read()
 
-        if (values[0] != settings.get("password", None)) or event in (
+        if (values[0] != settings.get("password", "None")) or event in (
             "Exit",
             sg.WIN_CLOSED,
         ):
@@ -105,7 +105,7 @@ def authenticate(settings):
             # print("lulu")
             break
 
-        if values[0] == settings.get("password", None):
+        if values[0] == settings.get("password", "None"):
             sg.popup(
                 "You can now access the settings menu.",
                 title="Authentication successful",
@@ -128,6 +128,28 @@ def change_email(settings):
     while True:
         event, values = window.read()
         settings.set("email", values[0])
+        if event in ("Exit", sg.WIN_CLOSED):
+            break
+
+        elif event == "Apply":
+            sg.popup("Email changed successfully")
+            break
+    window.close()
+
+
+def add_email(settings):
+    email = settings.get("email", "None")
+
+    layout = [
+        [sg.Text("Enter a new email:")],
+        [sg.InputText()],
+        [sg.Button("Apply"), sg.Button("Exit")],
+    ]
+    window = sg.Window("Change email", layout, finalize=True, modal=True)
+    while True:
+        event, values = window.read()
+        email.append(values[0])
+        settings.set("email", email)
         if event in ("Exit", sg.WIN_CLOSED):
             break
 
@@ -166,7 +188,7 @@ def main():
 
     while True:
         event, values = window.read()
-        print(event, values)
+        print(values['-email-'])
         if event == sg.WIN_CLOSED:
             break
         if values[0] == "Settings Menu":
@@ -176,10 +198,10 @@ def main():
                     window.Element("Main Menu").select()
         if event == "Change password":
             change_password(settings)
-        elif event == "Change email":
-            change_email(settings)
-            window['-email-'].update(settings.get("email", "None"))
-        # window.refresh()
+        elif event == "Add email":
+            add_email(settings)
+            window["-email-"].update(settings.get("email", "None"))
+            window.refresh()
         # print('lalala')
     window.close()
 
