@@ -45,6 +45,7 @@ def layout(settings):
         [
             sg.Button("Set notification limit"),
             sg.Button("Change email"),
+            sg.Button("Delete email"),
             sg.Button("Add email"),
             sg.Button("Change password"),
         ],
@@ -118,20 +119,25 @@ def authenticate(settings):
     return auth
 
 
-def change_email(settings):
+def change_email(l, settings):
+    print(l[0])
+    email = settings.get("email", "None")
+
     layout = [
-        [sg.Text("Enter new email:")],
+        [sg.Text("Enter the new email:")],
         [sg.InputText()],
         [sg.Button("Apply"), sg.Button("Exit")],
     ]
     window = sg.Window("Change email", layout, finalize=True, modal=True)
     while True:
         event, values = window.read()
-        settings.set("email", values[0])
+
         if event in ("Exit", sg.WIN_CLOSED):
             break
 
         elif event == "Apply":
+            email[:] = [values[0] if x == l[0] else x for x in email]
+            settings.set("email", email)
             sg.popup("Email changed successfully")
             break
     window.close()
@@ -148,15 +154,23 @@ def add_email(settings):
     window = sg.Window("Change email", layout, finalize=True, modal=True)
     while True:
         event, values = window.read()
-        email.append(values[0])
-        settings.set("email", email)
+
         if event in ("Exit", sg.WIN_CLOSED):
             break
 
         elif event == "Apply":
+            email.append(values[0])
+            settings.set("email", email)
             sg.popup("Email changed successfully")
             break
     window.close()
+
+
+def delete_email(l, settings):
+    email = settings.get("email", "None")
+    email.remove(l[0])
+    settings.set("email", email)
+    sg.popup("The selected email has been deleted.", title="Email deleted")
 
 
 def change_password(settings):
@@ -168,11 +182,12 @@ def change_password(settings):
     window = sg.Window("Change Password", layout, finalize=True, modal=True)
     while True:
         event, values = window.read()
-        settings.set("password", values[0])
+
         if event in ("Exit", sg.WIN_CLOSED):
             break
 
         elif event == "Apply":
+            settings.set("password", values[0])
             sg.popup("Password changed successfully")
             break
 
@@ -188,21 +203,42 @@ def main():
 
     while True:
         event, values = window.read()
-        print(values['-email-'])
+        print(type(event), type(values['-email-']))
+
         if event == sg.WIN_CLOSED:
             break
+
         if values[0] == "Settings Menu":
             if not auth:
                 auth = authenticate(settings)
                 if not auth:
                     window.Element("Main Menu").select()
+
         if event == "Change password":
             change_password(settings)
-        elif event == "Add email":
+
+        if event == "Add email":
             add_email(settings)
             window["-email-"].update(settings.get("email", "None"))
             window.refresh()
-        # print('lalala')
+
+        if event == "Change email" and not values['-email-']:
+            sg.popup("Select an email from the list and try again!",
+                     title="No email selected")
+        elif event == "Change email" and values['-email-']:
+            change_email(values['-email-'], settings)
+            window["-email-"].update(settings.get("email", "None"))
+            window.refresh()
+
+        if event == "Delete email" and not values['-email-']:
+            sg.popup("Select an email from the list and try again!",
+                     title="No email selected")
+        elif event == "Delete email" and values['-email-']:
+            delete_email(values['-email-'], settings)
+            window["-email-"].update(settings.get("email", "None"))
+            window.refresh()
+
+            # print('lalala')
     window.close()
 
 
