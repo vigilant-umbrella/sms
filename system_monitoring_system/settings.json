@@ -1,4 +1,1 @@
-{
-    "password": "123",
-    "email": "bla-bla-bla@gmail.com"
-}
+{"password": "123", "email": ["a@b.com", "d@c.com", "123"]}
