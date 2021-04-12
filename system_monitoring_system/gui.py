@@ -75,9 +75,11 @@ def layout(settings):
     ]
 
     window = sg.Window(
-        "System Monitoring System", layout, size=(900, 700), element_justification="c"
+        "System Monitoring System", layout, size=(900, 700),
+        element_justification="c"
     )
-    # window["abc"].Widget.configure(highlightcolor='red', highlightthickness=2)
+    # window["abc"].Widget.configure(highlightcolor='red',
+    # highlightthickness=2)
     return window
 
 
@@ -119,8 +121,7 @@ def authenticate(settings):
     return auth
 
 
-def change_email(l, settings):
-    print(l[0])
+def change_email(values, settings):
     email = settings.get("email", "None")
 
     layout = [
@@ -136,7 +137,7 @@ def change_email(l, settings):
             break
 
         elif event == "Apply":
-            email[:] = [values[0] if x == l[0] else x for x in email]
+            email[:] = [values[0] if x == values[0] else x for x in email]
             settings.set("email", email)
             sg.popup("Email changed successfully")
             break
@@ -166,9 +167,9 @@ def add_email(settings):
     window.close()
 
 
-def delete_email(l, settings):
+def delete_email(values, settings):
     email = settings.get("email", "None")
-    email.remove(l[0])
+    email.remove(values[0])
     settings.set("email", email)
     sg.popup("The selected email has been deleted.", title="Email deleted")
 
@@ -198,12 +199,11 @@ def main():
     sg.theme("SandyBeach")
     auth = False
     settings = sg.UserSettings(filename="./settings.json")
-    print(settings.full_filename)
+    # print(settings.full_filename)
     window = layout(settings)
 
     while True:
         event, values = window.read()
-        print(type(event), type(values['-email-']))
 
         if event == sg.WIN_CLOSED:
             break
