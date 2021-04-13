@@ -1,9 +1,11 @@
 from datetime import datetime
+from fpdf import FPDF
 import ifcfg
 import os
 import platform
 import psutil
 import speedtest
+import sys
 import time
 
 
@@ -142,6 +144,63 @@ def test_speed():
     result['up_speed'] = speed_dict['upload']
 
     return result
+
+
+def down_report(resource='Main Menu'):
+    pdf = FPDF(orientation='P', format='A4')
+    g = Get()
+    if resource == 'Main Menu':
+        # Page 1
+        pdf.add_page()
+        pdf.set_author('SMS')
+
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
+
+        pdf.set_font('Arial', 'B', 32)
+        pdf.cell(0, h=25, txt='Report', ln=1, align='C')
+
+        pdf.set_font('Arial', 'B', 20)
+        pdf.cell(0, h=15, txt='Overall Usage Summary - ', ln=1)
+
+        pdf.set_font('Arial', '', 12)
+        text = 'OS: {}'.format(g.os())
+        pdf.cell(0, h=5, txt=text, ln=1)
+        text = 'Uptime: {}'.format(g.uptime())
+        pdf.cell(0, h=5, txt=text, ln=1)
+
+        # CPU data
+        pdf.set_font('Arial', 'B', 16)
+        pdf.cell(0, h=15, txt='CPU:-', ln=1)
+        pdf.set_font('Arial', '', 12)
+        cpu_dict = g.cpu()
+        text = 'Load Average: {}'.format(cpu_dict['load_avg'])
+        pdf.cell(0, h=5, txt=text, ln=1)
+        text = 'User: {}'.format(cpu_dict['user'])
+        pdf.cell(0, h=5, txt=text, ln=1)
+        text = 'System: {}'.format(cpu_dict['system'])
+        pdf.cell(0, h=5, txt=text, ln=1)
+        text = 'Idle: {}'.format(cpu_dict['idle'])
+        pdf.cell(0, h=5, txt=text, ln=1)
+        text = 'I/O Wait: {}'.format(cpu_dict['iowait'])
+        pdf.cell(0, h=5, txt=text, ln=1)
+        text = 'Cores: {}'.format(cpu_dict['num_cores'])
+        pdf.cell(0, h=5, txt=text, ln=1)
+
+    pdf.output('../report.pdf', 'F')
+
+    # download_folder = ''
+    # if os.name == 'nt':
+    #     import winreg
+    #     sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
+    #     downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
+    #     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+    #         location = winreg.QueryValueEx(key, downloads_guid)[0]
+    #     download_folder = location
+    # else:
+    #     download_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+
+    # pdf.output(download_folder+'/report.pdf', 'F')
 
 
 if __name__ == '__main__':
