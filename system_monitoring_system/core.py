@@ -1,9 +1,16 @@
 from datetime import datetime
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from exceptions import ArgumentError
 from fpdf import FPDF
 import ifcfg
 import os
 import platform
 import psutil
+import secrets
+import smtplib
 import speedtest
 import time
 
@@ -145,10 +152,10 @@ def test_speed():
     return result
 
 
-def down_report(resource='Main Menu'):
+def create_report(resource):
     pdf = FPDF(orientation='P', format='A4')
-    pdf.add_font('Montserrat', '', '../Montserrat-Regular.ttf', uni=True)
-    pdf.add_font('Montserrat', 'B', '../Montserrat-Bold.ttf', uni=True)
+    pdf.add_font('Montserrat', '', 'Montserrat-Regular.ttf', uni=True)
+    pdf.add_font('Montserrat', 'B', 'Montserrat-Bold.ttf', uni=True)
 
     g = Get()
 
@@ -502,6 +509,16 @@ def down_report(resource='Main Menu'):
         text = 'Swapped out: {:,} Bytes'.format(swap_dict['sout'])
         pdf.cell(0, h=5, txt=text, ln=1)
 
+    else:
+        msg = 'Invalid Arugment Provided while creating report.'
+        raise ArgumentError(msg)
+
+    return pdf
+
+
+def down_report(resource='Main Menu'):
+    pdf = create_report(resource)
+
     download_folder = ''
     if os.name == 'nt':
         import winreg
@@ -514,6 +531,56 @@ def down_report(resource='Main Menu'):
         download_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
 
     pdf.output(download_folder+'/report.pdf', 'F')
+
+
+def send_email(resource='Main Menu'):
+    pdf = create_report(resource)
+
+    sender = secrets.USERNAME
+    password = secrets.PASSWORD
+    receivers = ['bcs_2019008@iiitm.ac.in',
+                 'bcs_2019075@iiitm.ac.in', 'bcs_2019025@iiitm.ac.in']
+
+    # Setup the MIME
+    message = MIMEMultipart()
+    message['From'] = 'System Monitoring System'
+    message['To'] = ', '.join(receivers)
+    message['Subject'] = 'Report - System Monitoring System'
+
+    body = """
+    Hi,
+
+    Please find attached the report you requested.
+
+    Regards,
+    System Monitoring System Team
+    """
+
+    message.attach(MIMEText(body, 'plain'))
+
+    payload = MIMEBase('application', 'octate-stream', Name='report.pdf')
+    payload.set_payload(pdf.output('report.pdf', 'S'))
+
+    # enconding the binary into base64
+    encoders.encode_base64(payload)
+
+    # add header with pdf name
+    payload.add_header('Content-Decomposition',
+                       'attachment', filename='report.pdf')
+    message.attach(payload)
+
+    # use gmail with port
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    # enable security
+    session.starttls()
+
+    # login with mail_id and password
+    session.login(sender, password)
+
+    text = message.as_string()
+    session.sendmail(sender, receivers, text)
+    session.quit()
+    print('Mail Sent')
 
 
 if __name__ == '__main__':
