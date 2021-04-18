@@ -1,15 +1,77 @@
 import PySimpleGUI as sg
+import core
 
 
 def layout(settings):
-
+    global g
+    cpu_dict = g.cpu()
+    memory_dict = g.memory()
+    networks = g.network()
+    storages = g.storage()
+    swap_dict = g.swap()
+    users = g.users()
     main_menu = [
-        [sg.Text("Its the main menu")],
+        [sg.Text("Overall Usage Summary - ", font=('Montserrat', 10, 'bold'))],
+        [sg.Text("Operating System: ", font=('Montserrat', 10, 'bold')), sg.Text(g.os())],
+        [sg.Text("Uptime: ", font=('Montserrat', 10, 'bold')), sg.Text("{} seconds".format(g.uptime()))],
+        
+        
+        [sg.Text("\nCPU - ", font=('Montserrat', 10, 'bold'))], 
+        [sg.Text("Load Average: ", font=('Montserrat', 10, 'bold')), sg.Text('{}  {}  {}'.format(cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2]))],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+
+        [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['user']))],
+        [sg.Text("System: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['system']))],
+        [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['idle']))],
+        [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['iowait']))],
+        [sg.Text("Cores: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(cpu_dict['num_cores']))],
+        [sg.Text("Total", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['total']))],
+        [sg.Text("Used: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['used_incl']))],
+        [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['free'])  )],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        # 'User: {} %'.format(cpu_dict['user'])
+        # 'System: {} %'.format(cpu_dict['system'])
+        # 'Idle: {} %'.format(cpu_dict['idle'])
+        # 'I/O Wait: {} %'.format(cpu_dict['iowait'])
+        # 'Cores: {}'.format(cpu_dict['num_cores'])
+        # 'Total: {:,} Bytes'.format(memory_dict['total'])
+        # 'Used: {:,} Bytes'.format(memory_dict['used_incl'])
+        # 'Free: {:,} Bytes'.format(memory_dict['free'])  
+        # for network_dict in networks:
+        #     text = 'Interface: {}'.format(network_dict['interface'])
+        #     text = 'IP: {}'.format(network_dict['ip'])
+        # for storage_dict in storages:
+        #     text = 'Device: {}'.format(storage_dict['device'])
+        #     text = 'Mounted: {}'.format(storage_dict['mountpoint'])
+        #     text = 'Total: {:,} Bytes'.format(storage_dict['total'])
+        #     text = 'Used: {:,} Bytes ({}%)'.format(storage_dict['used'], storage_dict['percent'])
+        #     text = 'Free: {:,} Bytes'.format(storage_dict['free'])
+        # 'Total: {:,} Bytes'.format(swap_dict['total'])
+        # 'Used: {:,} Bytes ({}%)'.format(swap_dict['used'], swap_dict['percent'])
+        # 'Free: {:,} Bytes'.format(swap_dict['free'])
+        # 'Swapped in: {:,} Bytes'.format(swap_dict['sin'])
+        # 'Swapped out: {:,} Bytes'.format(swap_dict['sout'])
+
+        # for user_dict in users:
+        #     text = 'Name: {}'.format(user_dict['name'])
+        #     text = 'Session started: {}'.format(user_dict['sess_started'])
+        #     text = 'Host: {}'.format(user_dict['host'])
+        
         [
             sg.Button("Generate report"),
-            sg.Button(
-                "Send report as email",
-            ),
+            sg.Button("Send report as email",),
         ],
     ]
     cpu_menu = [
@@ -37,16 +99,24 @@ def layout(settings):
         [sg.Button("Generate report"), sg.Button("Send report as email")],
     ]
 
-    email = settings.get("email", "None")
+    # names = settings.get("names", ["None"])
+    # email = settings.get("email", ["None"])
+    
+    # name_email = [n+" - "+e for n, e in zip(names, email)]
+
+    # settings.set("name-email", name_email)
+
+    name_email = settings.get("name-email", ["None"])
+
     settings = [
         [sg.Text("Its the settings menu")],
-        [sg.Text("Current email(s): "), sg.Listbox(
-            email, key="-email-", size=(100, 5), enable_events=True)],
+        [sg.Text("Current name(s) - email(s): "), sg.Listbox(
+            name_email, key="-email-", size=(100, 5), enable_events=True)],
         [
             sg.Button("Set notification limit"),
-            sg.Button("Change email"),
-            sg.Button("Delete email"),
-            sg.Button("Add email"),
+            sg.Button("Change record"),
+            sg.Button("Delete record"),
+            sg.Button("Add record"),
             sg.Button("Change password"),
         ],
     ]
@@ -75,7 +145,7 @@ def layout(settings):
     ]
 
     window = sg.Window(
-        "System Monitoring System", layout, size=(900, 700),
+        "System Monitoring System", layout, size=(1000, 800),
         element_justification="c"
     )
     # window["abc"].Widget.configure(highlightcolor='red',
@@ -121,15 +191,15 @@ def authenticate(settings):
     return auth
 
 
-def change_email(values, settings):
-    email = settings.get("email", "None")
-
+def change_record(val, settings):
     layout = [
+        [sg.Text("Enter the new name: ")],
+        [sg.InputText()],
         [sg.Text("Enter the new email:")],
         [sg.InputText()],
         [sg.Button("Apply"), sg.Button("Exit")],
     ]
-    window = sg.Window("Change email", layout, finalize=True, modal=True)
+    window = sg.Window("Change record", layout, finalize=True, modal=True)
     while True:
         event, values = window.read()
 
@@ -137,22 +207,22 @@ def change_email(values, settings):
             break
 
         elif event == "Apply":
-            email[:] = [values[0] if x == values[0] else x for x in email]
-            settings.set("email", email)
-            sg.popup("Email changed successfully")
+            name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
+            settings.set("name-email", name_email)
+            sg.popup("Record changed successfully")
             break
     window.close()
 
 
-def add_email(settings):
-    email = settings.get("email", "None")
-
-    layout = [
+def add_record(settings):
+    layout = [        
+        [sg.Text("Enter the new name: ")],
+        [sg.InputText()],
         [sg.Text("Enter a new email:")],
         [sg.InputText()],
         [sg.Button("Apply"), sg.Button("Exit")],
     ]
-    window = sg.Window("Change email", layout, finalize=True, modal=True)
+    window = sg.Window("Add record", layout, finalize=True, modal=True)
     while True:
         event, values = window.read()
 
@@ -160,18 +230,17 @@ def add_email(settings):
             break
 
         elif event == "Apply":
-            email.append(values[0])
-            settings.set("email", email)
-            sg.popup("Email changed successfully")
+            name_email.append(values[0]+" - "+values[1])
+            settings.set("name-email", name_email)
+            sg.popup("Record added successfully")
             break
     window.close()
 
 
-def delete_email(values, settings):
-    email = settings.get("email", "None")
-    email.remove(values[0])
-    settings.set("email", email)
-    sg.popup("The selected email has been deleted.", title="Email deleted")
+def delete_record(values, settings):
+    name_email.remove(values[0])
+    settings.set("name-email", name_email)
+    sg.popup("The selected record has been deleted.", title="Record deleted")
 
 
 def change_password(settings):
@@ -196,14 +265,13 @@ def change_password(settings):
 
 
 def main():
-    sg.theme("SandyBeach")
     auth = False
-    settings = sg.UserSettings(filename="./settings.json")
-    # print(settings.full_filename)
+
     window = layout(settings)
 
     while True:
         event, values = window.read()
+        # print(values[0])
 
         if event == sg.WIN_CLOSED:
             break
@@ -217,30 +285,37 @@ def main():
         if event == "Change password":
             change_password(settings)
 
-        if event == "Add email":
-            add_email(settings)
-            window["-email-"].update(settings.get("email", "None"))
+        if event == "Add record":
+            add_record(settings)
+            window["-email-"].update(name_email)
             window.refresh()
 
-        if event == "Change email" and not values['-email-']:
+        if event == "Change record" and not values['-email-']:
             sg.popup("Select an email from the list and try again!",
                      title="No email selected")
-        elif event == "Change email" and values['-email-']:
-            change_email(values['-email-'], settings)
-            window["-email-"].update(settings.get("email", "None"))
+        elif event == "Change record" and values['-email-']:
+            change_record(values['-email-'], settings)
+            window["-email-"].update(name_email)
             window.refresh()
 
-        if event == "Delete email" and not values['-email-']:
+        if event == "Delete record" and not values['-email-']:
             sg.popup("Select an email from the list and try again!",
                      title="No email selected")
-        elif event == "Delete email" and values['-email-']:
-            delete_email(values['-email-'], settings)
-            window["-email-"].update(settings.get("email", "None"))
+        elif event == "Delete record" and values['-email-']:
+            delete_record(values['-email-'], settings)
+            window["-email-"].update(name_email)
             window.refresh()
-
+    window.refresh()
             # print('lalala')
     window.close()
 
 
 if __name__ == "__main__":
+    g = core.Get()
+
+    sg.theme("SandyBeach")
+    sg.set_options(font=('Montserrat', 10))
+
+    settings = sg.UserSettings(filename="./settings.json")
+    name_email = settings.get("name-email", ["None"])
     main()
