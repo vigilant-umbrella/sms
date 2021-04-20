@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 import core
-
+import keyring
 
 def layout(settings):
     global g
@@ -154,41 +154,51 @@ def layout(settings):
 
 
 def authenticate(settings):
-    auth = False
-    layout = [
-        [sg.Text("Enter Administrator password:")],
-        [sg.InputText()],
-        [sg.Button("Authenticate"), sg.Button("Exit")],
-    ]
-    window = sg.Window(
-        "Authenticate as administrator", layout, finalize=True, modal=True
-    )
-    while True:
+    password = keyring.get_password('sms_password', 'Adminstrator')
+    if password is None:
+        layout = [
+            [sg.Text("Enter NEW Administrator password:")],
+            [sg.InputText()],
+            [sg.Button("Apply"), sg.Button("Exit")],
+        ]
+        window = sg.Window("NEW password", layout, finalize=True, modal=True)
         event, values = window.read()
+        keyring.set_password('sms_password', 'Adminstrator', values[0])
+        window.close()
+        return True    
+    else:
+        auth = False
+        layout = [
+            [sg.Text("Enter Administrator password:")],
+            [sg.InputText()],
+            [sg.Button("Authenticate"), sg.Button("Exit")],
+        ]
+        window = sg.Window(
+            "Authenticate as administrator", layout, finalize=True, modal=True
+        )
+        while True:
+            event, values = window.read()
 
-        if (values[0] != settings.get("password", "None")) or event in (
-            "Exit",
-            sg.WIN_CLOSED,
-        ):
-            sg.popup(
-                "Error in Authentication, taking back to main menu.",
-                title="Authentication error",
-            )
-            auth = False
-            # print("lulu")
-            break
+            if (values[0] != password) or event in (
+                "Exit",
+                sg.WIN_CLOSED,
+            ):
+                sg.popup(
+                    "Error in Authentication, taking back to main menu.",
+                    title="Authentication error",
+                )
+                auth = False
+                break
 
-        if values[0] == settings.get("password", "None"):
-            sg.popup(
-                "You can now access the settings menu.",
-                title="Authentication successful",
-            )
-            auth = True
-            # print('aulelele')
-            break
-
-    window.close()
-    return auth
+            if values[0] == password:
+                sg.popup(
+                    "You can now access the settings menu.",
+                    title="Authentication successful",
+                )
+                auth = True
+                break
+        window.close()
+        return auth
 
 
 def change_record(val, settings):
