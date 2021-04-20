@@ -133,3 +133,6 @@ dmypy.json
 
 # Font files
 *.pkl
+
+# Settings file
+settings.json
