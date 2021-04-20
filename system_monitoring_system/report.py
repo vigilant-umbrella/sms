@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from exceptions import AuthenticationError
 import helper
+import json
 import os
 import smtplib
 
@@ -32,8 +33,9 @@ def send_email(email, password, resource='Main Menu'):
 
     filename = 'report_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'.pdf'
 
-    receivers = ['bcs_2019008@iiitm.ac.in',
-                 'bcs_2019075@iiitm.ac.in', 'bcs_2019025@iiitm.ac.in']
+    settings_file = open('system_monitoring_system/settings.json')
+    settings = json.load(settings_file)
+    receivers = list(settings['email'].keys())
 
     # Setup the MIME
     message = MIMEMultipart()
