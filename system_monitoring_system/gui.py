@@ -267,7 +267,7 @@ def change_password(settings):
             break
 
         elif event == "Apply":
-            settings.set("password", values[0])
+            keyring.set_password('sms_password', 'Adminstrator', values[0])
             sg.popup("Password changed successfully")
             break
 
