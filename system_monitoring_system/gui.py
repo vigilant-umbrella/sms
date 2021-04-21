@@ -154,7 +154,7 @@ def layout(settings):
 
 
 def authenticate(settings):
-    password = keyring.get_password('sms_password', 'Adminstrator')
+    password = keyring.get_password('sms_password', 'Administrator')
     if password is None:
         layout = [
             [sg.Text("Enter NEW Administrator password:")],
@@ -163,7 +163,7 @@ def authenticate(settings):
         ]
         window = sg.Window("NEW password", layout, finalize=True, modal=True)
         event, values = window.read()
-        keyring.set_password('sms_password', 'Adminstrator', values[0])
+        keyring.set_password('sms_password', 'Administrator', values[0])
         window.close()
         return True    
     else:
@@ -269,7 +269,7 @@ def change_password(settings):
             break
 
         elif event == "Apply":
-            keyring.set_password('sms_password', 'Adminstrator', values[0])
+            keyring.set_password('sms_password', 'Administrator', values[0])
             sg.popup("Password changed successfully")
             break
 
