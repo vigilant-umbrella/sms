@@ -106,8 +106,8 @@ def layout(settings):
 
     # settings.set("name-email", name_email)
 
-    name_email = settings.get("name-email", ["None"])
-
+    name_email = [n+' - '+e for n, e in settings.get("email", ["None"]).items()]
+    print(name_email)
     settings = [
         [sg.Text("Its the settings menu")],
         [sg.Text("Current name(s) - email(s): "), sg.Listbox(
