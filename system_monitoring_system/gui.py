@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 import core
-
+import keyring
 
 def layout(settings):
     global g
@@ -106,8 +106,8 @@ def layout(settings):
 
     # settings.set("name-email", name_email)
 
-    name_email = settings.get("name-email", ["None"])
-
+    name_email = [n+' - '+e for e, n in settings.get("email", ["None"]).items()]
+    print(name_email)
     settings = [
         [sg.Text("Its the settings menu")],
         [sg.Text("Current name(s) - email(s): "), sg.Listbox(
@@ -154,41 +154,51 @@ def layout(settings):
 
 
 def authenticate(settings):
-    auth = False
-    layout = [
-        [sg.Text("Enter Administrator password:")],
-        [sg.InputText()],
-        [sg.Button("Authenticate"), sg.Button("Exit")],
-    ]
-    window = sg.Window(
-        "Authenticate as administrator", layout, finalize=True, modal=True
-    )
-    while True:
+    password = keyring.get_password('sms_password', 'Administrator')
+    if password is None:
+        layout = [
+            [sg.Text("Enter NEW Administrator password:")],
+            [sg.InputText()],
+            [sg.Button("Apply"), sg.Button("Exit")],
+        ]
+        window = sg.Window("NEW password", layout, finalize=True, modal=True)
         event, values = window.read()
+        keyring.set_password('sms_password', 'Administrator', values[0])
+        window.close()
+        return True    
+    else:
+        auth = False
+        layout = [
+            [sg.Text("Enter Administrator password:")],
+            [sg.InputText()],
+            [sg.Button("Authenticate"), sg.Button("Exit")],
+        ]
+        window = sg.Window(
+            "Authenticate as administrator", layout, finalize=True, modal=True
+        )
+        while True:
+            event, values = window.read()
 
-        if (values[0] != settings.get("password", "None")) or event in (
-            "Exit",
-            sg.WIN_CLOSED,
-        ):
-            sg.popup(
-                "Error in Authentication, taking back to main menu.",
-                title="Authentication error",
-            )
-            auth = False
-            # print("lulu")
-            break
+            if (values[0] != password) or event in (
+                "Exit",
+                sg.WIN_CLOSED,
+            ):
+                sg.popup(
+                    "Error in Authentication, taking back to main menu.",
+                    title="Authentication error",
+                )
+                auth = False
+                break
 
-        if values[0] == settings.get("password", "None"):
-            sg.popup(
-                "You can now access the settings menu.",
-                title="Authentication successful",
-            )
-            auth = True
-            # print('aulelele')
-            break
-
-    window.close()
-    return auth
+            if values[0] == password:
+                sg.popup(
+                    "You can now access the settings menu.",
+                    title="Authentication successful",
+                )
+                auth = True
+                break
+        window.close()
+        return auth
 
 
 def change_record(val, settings):
@@ -208,13 +218,14 @@ def change_record(val, settings):
 
         elif event == "Apply":
             name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
-            settings.set("name-email", name_email)
+            settings.set("email", name_email)
             sg.popup("Record changed successfully")
             break
     window.close()
 
 
 def add_record(settings):
+    dict = settings.get("email", ["None"])
     layout = [        
         [sg.Text("Enter the new name: ")],
         [sg.InputText()],
@@ -230,8 +241,9 @@ def add_record(settings):
             break
 
         elif event == "Apply":
-            name_email.append(values[0]+" - "+values[1])
-            settings.set("name-email", name_email)
+            # name_email.append(values[0]+" - "+values[1])
+            dict.update({values[1]: values[0]})
+            settings.set("email", dict)
             sg.popup("Record added successfully")
             break
     window.close()
@@ -239,7 +251,7 @@ def add_record(settings):
 
 def delete_record(values, settings):
     name_email.remove(values[0])
-    settings.set("name-email", name_email)
+    settings.set("email", name_email)
     sg.popup("The selected record has been deleted.", title="Record deleted")
 
 
@@ -257,7 +269,7 @@ def change_password(settings):
             break
 
         elif event == "Apply":
-            settings.set("password", values[0])
+            keyring.set_password('sms_password', 'Administrator', values[0])
             sg.popup("Password changed successfully")
             break
 
@@ -287,6 +299,7 @@ def main():
 
         if event == "Add record":
             add_record(settings)
+            # name_email = [n+' - '+e for n, e in settings.get("email", ["None"]).items()]
             window["-email-"].update(name_email)
             window.refresh()
 
@@ -306,7 +319,6 @@ def main():
             window["-email-"].update(name_email)
             window.refresh()
     window.refresh()
-            # print('lalala')
     window.close()
 
 
@@ -317,5 +329,5 @@ if __name__ == "__main__":
     sg.set_options(font=('Montserrat', 10))
 
     settings = sg.UserSettings(filename="./settings.json")
-    name_email = settings.get("name-email", ["None"])
+    name_email = [n+' - '+e for e, n in settings.get("email", ["None"]).items()]
     main()
