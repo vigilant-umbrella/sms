@@ -5,10 +5,15 @@ import keyring
 def layout(settings):
     global g
     cpu_dict = g.cpu()
+    # print(len(cpu_dict))
     memory_dict = g.memory()
+    # print(len(memory_dict))
     networks = g.network()
+    # print(len(networks))
     storages = g.storage()
+    # print(len(storages))
     swap_dict = g.swap()
+    # print(len(swap_dict))
     users = g.users()
     processes = g.process()
 
