@@ -9,6 +9,7 @@ ifcfg = "*"
 speedtest-cli = "*"
 fpdf = "*"
 pysimplegui = "*"
+keyring = "*"
 
 [dev-packages]
 autopep8 = "*"

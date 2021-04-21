@@ -106,7 +106,7 @@ def layout(settings):
 
     # settings.set("name-email", name_email)
 
-    name_email = [n+' - '+e for n, e in settings.get("email", ["None"]).items()]
+    name_email = [n+' - '+e for e, n in settings.get("email", ["None"]).items()]
     print(name_email)
     settings = [
         [sg.Text("Its the settings menu")],
@@ -218,13 +218,14 @@ def change_record(val, settings):
 
         elif event == "Apply":
             name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
-            settings.set("name-email", name_email)
+            settings.set("email", name_email)
             sg.popup("Record changed successfully")
             break
     window.close()
 
 
 def add_record(settings):
+    dict = settings.get("email", ["None"])
     layout = [        
         [sg.Text("Enter the new name: ")],
         [sg.InputText()],
@@ -240,8 +241,9 @@ def add_record(settings):
             break
 
         elif event == "Apply":
-            name_email.append(values[0]+" - "+values[1])
-            settings.set("name-email", name_email)
+            # name_email.append(values[0]+" - "+values[1])
+            dict.update({values[1]: values[0]})
+            settings.set("email", dict)
             sg.popup("Record added successfully")
             break
     window.close()
@@ -249,7 +251,7 @@ def add_record(settings):
 
 def delete_record(values, settings):
     name_email.remove(values[0])
-    settings.set("name-email", name_email)
+    settings.set("email", name_email)
     sg.popup("The selected record has been deleted.", title="Record deleted")
 
 
@@ -297,6 +299,7 @@ def main():
 
         if event == "Add record":
             add_record(settings)
+            # name_email = [n+' - '+e for n, e in settings.get("email", ["None"]).items()]
             window["-email-"].update(name_email)
             window.refresh()
 
@@ -316,7 +319,6 @@ def main():
             window["-email-"].update(name_email)
             window.refresh()
     window.refresh()
-            # print('lalala')
     window.close()
 
 
@@ -327,5 +329,5 @@ if __name__ == "__main__":
     sg.set_options(font=('Montserrat', 10))
 
     settings = sg.UserSettings(filename="./settings.json")
-    name_email = settings.get("name-email", ["None"])
+    name_email = [n+' - '+e for e, n in settings.get("email", ["None"]).items()]
     main()
