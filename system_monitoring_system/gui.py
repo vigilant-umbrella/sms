@@ -15,7 +15,6 @@ def layout(settings):
         [sg.Text("Operating System: ", font=('Montserrat', 10, 'bold')), sg.Text(g.os())],
         [sg.Text("Uptime: ", font=('Montserrat', 10, 'bold')), sg.Text("{} seconds".format(g.uptime()))],
         
-        
         [sg.Text("\nCPU - ", font=('Montserrat', 10, 'bold'))], 
         [sg.Text("Load Average: ", font=('Montserrat', 10, 'bold')), sg.Text('{}  {}  {}'.format(cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2]))],
         [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
@@ -101,17 +100,19 @@ def layout(settings):
 
     # names = settings.get("names", ["None"])
     # email = settings.get("email", ["None"])
-    
     # name_email = [n+" - "+e for n, e in zip(names, email)]
-
     # settings.set("name-email", name_email)
+    # name_email = settings.get("email", {"None":"No data found"}).items()
 
-    name_email = [n+' - '+e for e, n in settings.get("email", ["None"]).items()]
-    print(name_email)
+    global name_email
+    if name_email is None:
+        n_e = ["File doesn't exist - No record found"]
+    else: n_e = [n+' - '+e for e, n in name_email.items()]
+
     settings = [
         [sg.Text("Its the settings menu")],
         [sg.Text("Current name(s) - email(s): "), sg.Listbox(
-            name_email, key="-email-", size=(100, 5), enable_events=True)],
+            n_e, key="-email-", size=(100, 10), enable_events=True)],
         [
             sg.Button("Set notification limit"),
             sg.Button("Change record"),
@@ -157,7 +158,7 @@ def authenticate(settings):
     password = keyring.get_password('sms_password', 'Administrator')
     if password is None:
         layout = [
-            [sg.Text("Enter NEW Administrator password:")],
+            [sg.Text("No Administrator password found in keyring! \nEnter NEW Administrator password:")],
             [sg.InputText()],
             [sg.Button("Apply"), sg.Button("Exit")],
         ]
@@ -202,6 +203,8 @@ def authenticate(settings):
 
 
 def change_record(val, settings):
+    global name_email
+    # print(str(val[0]).split()[-1])
     layout = [
         [sg.Text("Enter the new name: ")],
         [sg.InputText()],
@@ -217,7 +220,9 @@ def change_record(val, settings):
             break
 
         elif event == "Apply":
-            name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
+            del name_email[str(val[0]).split()[-1]]
+            name_email[values[1]] = values[0]
+            # name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
             settings.set("email", name_email)
             sg.popup("Record changed successfully")
             break
@@ -225,7 +230,10 @@ def change_record(val, settings):
 
 
 def add_record(settings):
-    dict = settings.get("email", ["None"])
+    global name_email
+    if name_email is None:
+        name_email = {}
+    # dict = settings.get("email", {"No record found" : "File doesn't exist"})
     layout = [        
         [sg.Text("Enter the new name: ")],
         [sg.InputText()],
@@ -241,19 +249,19 @@ def add_record(settings):
             break
 
         elif event == "Apply":
-            # name_email.append(values[0]+" - "+values[1])
-            dict.update({values[1]: values[0]})
-            settings.set("email", dict)
+            name_email.update({values[1]: values[0]})
+            # dict.update({values[1]: values[0]})
+            settings.set("email", name_email)
             sg.popup("Record added successfully")
             break
     window.close()
 
 
 def delete_record(values, settings):
-    name_email.remove(values[0])
+    global name_email
+    del name_email[str(values[0]).split()[-1]]
     settings.set("email", name_email)
     sg.popup("The selected record has been deleted.", title="Record deleted")
-
 
 def change_password(settings):
     layout = [
@@ -283,6 +291,7 @@ def main():
 
     while True:
         event, values = window.read()
+        print(values['-email-'])
         # print(values[0])
 
         if event == sg.WIN_CLOSED:
@@ -295,29 +304,40 @@ def main():
                     window.Element("Main Menu").select()
 
         if event == "Change password":
+            sg.popup("Select an email from the list and try again!",
+                     title="No email selected")
             change_password(settings)
 
         if event == "Add record":
             add_record(settings)
-            # name_email = [n+' - '+e for n, e in settings.get("email", ["None"]).items()]
-            window["-email-"].update(name_email)
+            n_e = [n+' - '+e for e, n in name_email.items()]
+            window["-email-"].update(n_e)
             window.refresh()
 
         if event == "Change record" and not values['-email-']:
             sg.popup("Select an email from the list and try again!",
                      title="No email selected")
         elif event == "Change record" and values['-email-']:
-            change_record(values['-email-'], settings)
-            window["-email-"].update(name_email)
-            window.refresh()
+            if values['-email-'][0] == "File doesn't exist - No record found":
+                sg.popup("Add record and try again!", title="No record found")
+            else:
+                change_record(values['-email-'], settings)
+                n_e = [n+' - '+e for e, n in name_email.items()]
+                window["-email-"].update(n_e)
+                window.refresh()
 
         if event == "Delete record" and not values['-email-']:
             sg.popup("Select an email from the list and try again!",
                      title="No email selected")
         elif event == "Delete record" and values['-email-']:
-            delete_record(values['-email-'], settings)
-            window["-email-"].update(name_email)
-            window.refresh()
+            if values['-email-'][0] == "File doesn't exist - No record found":
+                sg.popup("Add record and try again!", title="No record found")
+            else:
+                delete_record(values['-email-'], settings)
+                n_e = [n+' - '+e for e, n in name_email.items()]
+                window["-email-"].update(n_e)
+                window.refresh()
+
     window.refresh()
     window.close()
 
@@ -329,5 +349,7 @@ if __name__ == "__main__":
     sg.set_options(font=('Montserrat', 10))
 
     settings = sg.UserSettings(filename="./settings.json")
-    name_email = [n+' - '+e for e, n in settings.get("email", ["None"]).items()]
+    name_email = settings.get("email", None)
+
+    # name_email = [n+' - '+e for e, n in settings.get("email", {"None":"No data found"}).items()]
     main()
