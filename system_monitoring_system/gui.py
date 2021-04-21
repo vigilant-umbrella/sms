@@ -5,98 +5,218 @@ import keyring
 def layout(settings):
     global g
     cpu_dict = g.cpu()
+    # print(len(cpu_dict))
     memory_dict = g.memory()
+    # print(len(memory_dict))
     networks = g.network()
+    # print(len(networks))
     storages = g.storage()
+    # print(len(storages))
     swap_dict = g.swap()
+    # print(len(swap_dict))
     users = g.users()
+    # print(len(users))
+    processes = g.process()
+    # print(len(processes))
     main_menu = [
         [sg.Text("Overall Usage Summary - ", font=('Montserrat', 10, 'bold'))],
         [sg.Text("Operating System: ", font=('Montserrat', 10, 'bold')), sg.Text(g.os())],
-        [sg.Text("Uptime: ", font=('Montserrat', 10, 'bold')), sg.Text("{} seconds".format(g.uptime()))],
+        [sg.Text("Uptime: ", font=('Montserrat', 10, 'bold')), sg.Text("{} seconds".format(g.uptime()), key='-update-')],
         
         [sg.Text("\nCPU - ", font=('Montserrat', 10, 'bold'))], 
         [sg.Text("Load Average: ", font=('Montserrat', 10, 'bold')), sg.Text('{}  {}  {}'.format(cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2]))],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
 
         [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['user']))],
         [sg.Text("System: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['system']))],
         [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['idle']))],
         [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['iowait']))],
         [sg.Text("Cores: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(cpu_dict['num_cores']))],
+  
+        [sg.Text("\nMemory - ", font=('Montserrat', 10, 'bold'))], 
         [sg.Text("Total", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['total']))],
         [sg.Text("Used: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['used_incl']))],
         [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['free'])  )],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        # 'User: {} %'.format(cpu_dict['user'])
-        # 'System: {} %'.format(cpu_dict['system'])
-        # 'Idle: {} %'.format(cpu_dict['idle'])
-        # 'I/O Wait: {} %'.format(cpu_dict['iowait'])
-        # 'Cores: {}'.format(cpu_dict['num_cores'])
-        # 'Total: {:,} Bytes'.format(memory_dict['total'])
-        # 'Used: {:,} Bytes'.format(memory_dict['used_incl'])
-        # 'Free: {:,} Bytes'.format(memory_dict['free'])  
-        # for network_dict in networks:
-        #     text = 'Interface: {}'.format(network_dict['interface'])
-        #     text = 'IP: {}'.format(network_dict['ip'])
-        # for storage_dict in storages:
-        #     text = 'Device: {}'.format(storage_dict['device'])
-        #     text = 'Mounted: {}'.format(storage_dict['mountpoint'])
-        #     text = 'Total: {:,} Bytes'.format(storage_dict['total'])
-        #     text = 'Used: {:,} Bytes ({}%)'.format(storage_dict['used'], storage_dict['percent'])
-        #     text = 'Free: {:,} Bytes'.format(storage_dict['free'])
-        # 'Total: {:,} Bytes'.format(swap_dict['total'])
-        # 'Used: {:,} Bytes ({}%)'.format(swap_dict['used'], swap_dict['percent'])
-        # 'Free: {:,} Bytes'.format(swap_dict['free'])
-        # 'Swapped in: {:,} Bytes'.format(swap_dict['sin'])
-        # 'Swapped out: {:,} Bytes'.format(swap_dict['sout'])
-
-        # for user_dict in users:
-        #     text = 'Name: {}'.format(user_dict['name'])
-        #     text = 'Session started: {}'.format(user_dict['sess_started'])
-        #     text = 'Host: {}'.format(user_dict['host'])
         
-        [
+    ]   
+    
+    # [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+
+    main_menu += [ [sg.Text("\nNetwork - ", font=('Montserrat', 10, 'bold'))] ] 
+
+    for network_dict in networks:
+        main_menu += [
+            [sg.Text("Interface: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['interface']))],
+            [sg.Text("IP: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['ip']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+    
+    main_menu += [ [sg.Text("\nStorage - ", font=('Montserrat', 10, 'bold'))] ] 
+    for storage_dict in storages:
+        main_menu += [
+            [sg.Text("Device: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(storage_dict['device']))],
+            [sg.Text("Mounted: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(storage_dict['mountpoint']))],
+            [sg.Text("Total: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(storage_dict['total']))],
+            [sg.Text("Used: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes ({}%)'.format(storage_dict['used'], storage_dict['percent']))],
+            [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(storage_dict['free']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+    
+    main_menu += [ [sg.Text("\nSwap - ", font=('Montserrat', 10, 'bold'))] ] 
+    main_menu += [
+        [sg.Text("Total ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['total']))],
+        [sg.Text("Used: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes ({}%)'.format(swap_dict['used'], swap_dict['percent']))],
+        [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['free']))],
+        [sg.Text("Swapped in: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sin']))],
+        [sg.Text("Swapped out: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sout']))],
+        # [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+    ]   
+
+    main_menu += [ [sg.Text("\nUsers - ", font=('Montserrat', 10, 'bold'))] ] 
+    for user_dict in users:
+        main_menu += [
+            [sg.Text("Name: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(user_dict['name']))],
+            [sg.Text("Session started: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(user_dict['sess_started']))],
+            [sg.Text("Host: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(user_dict['host']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+        
+    main_menu = [[sg.Column(main_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
             sg.Button("Generate report"),
             sg.Button("Send report as email",),
-        ],
-    ]
+        ]]
+
+    
     cpu_menu = [
-        [sg.Text("Its the cpu menu")],
-        [sg.Button("Generate report"), sg.Button("Send report as email")],
+        [sg.Text("CPU Usage Summary -")],        
+        [sg.Text("Load Average: ", font=('Montserrat', 10, 'bold')), sg.Text('{}  {}  {}'.format(cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2]))],
+        [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['user']))],
+        [sg.Text("System: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['system']))],
+        [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['idle']))],
+        [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['iowait']))],
     ]
+
+    counter = 1
+    for cpu_core in cpu_dict['cores']:
+        cpu_menu += [
+            [sg.Text("Core: ", font=('Montserrat', 10, 'bold')), sg.Text('Core {}:-'.format(counter))],
+            [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('User: {} %'.format(cpu_core['user']))],
+            [sg.Text("System: ", font=('Montserrat', 10, 'bold')), sg.Text('System: {} %'.format(cpu_core['system']))],
+            [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')), sg.Text('Idle: {} %'.format(cpu_core['idle']))],
+            [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')), sg.Text('I/O Wait: {} %'.format(cpu_core['iowait']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+        counter += 1
+    
+    cpu_menu = [[sg.Column(cpu_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
+        sg.Button("Generate report"),
+        sg.Button("Send report as email",),
+    ]]
+
+
     memory_menu = [
-        [sg.Text("Its the memory menu")],
-        [sg.Button("Generate report"), sg.Button("Send report as email")],
+        [sg.Text("Memory Usage Summary -")],
     ]
+    memory_menu += [
+        [sg.Text("Total: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['total']))],
+        [sg.Text("Available: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['available']))],
+        [sg.Text("Used (excl. Cache & buffer): ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes ({}%)'.format(memory_dict['used_excl'], memory_dict['percent']))],
+        [sg.Text("Used (incl. Cache & buffer): ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['used_incl']))],
+        [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['free']))],
+
+    ]
+    memory_menu = [[sg.Column(memory_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
+        sg.Button("Generate report"),
+        sg.Button("Send report as email",),
+    ]]
+
     process_menu = [
-        [sg.Text("Its the process menu")],
-        [sg.Button("Generate report"), sg.Button("Send report as email")],
+        [sg.Text("Process Usage Summary -")],
     ]
+
+    for process_dict in processes:
+        process_menu += [
+            [sg.Text("PID: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['pid']))],
+            [sg.Text("Name: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['name']))],
+            [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['user']))],
+            [sg.Text("Status: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['status']))],
+            [sg.Text("Created: ", font=('Montserrat', 10, 'bold')), sg.Text('{} seconds since the epoch'.format(process_dict['created']))],
+            [sg.Text("Memory: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(process_dict['memory']))],
+            [sg.Text("CPU: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(process_dict['cpu']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+    process_menu = [[sg.Column(process_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
+        sg.Button("Generate report"),
+        sg.Button("Send report as email",),
+    ]]
+
     storage_menu = [
-        [sg.Text("Its the storage menu")],
-        [sg.Button("Generate report"), sg.Button("Send report as email")],
-    ]
+        [sg.Text("Storage Usage Summary -")],
+    ]       
+    for storage_dict in storages:
+        storage_menu += [
+            [sg.Text("Device: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(storage_dict['device']))],
+            [sg.Text("Mounted: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(storage_dict['mountpoint']))],
+            [sg.Text("Type: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(storage_dict['fstype']))],
+            [sg.Text("Options: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(storage_dict['options']))],
+            [sg.Text("Total: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(storage_dict['total']))],
+            [sg.Text("Used: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes ({}%)'.format(storage_dict['used'], storage_dict['percent']))],
+            [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(storage_dict['free']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+    storage_menu = [[sg.Column(storage_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
+        sg.Button("Generate report"),
+        sg.Button("Send report as email",),
+    ]]
+
     network_menu = [
-        [sg.Text("Its the network menu")],
-        [sg.Button("Generate report"), sg.Button("Send report as email")],
+        [sg.Text("Network Usage Summary -")],
     ]
+    for network_dict in networks:
+        network_menu += [
+            [sg.Text("Interface: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['interface']))],
+            [sg.Text("IP: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['ip']))],
+            [sg.Text("Bytes sent: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['bytes_sent']))],
+            [sg.Text("Bytes received: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['bytes_recv']))],
+            [sg.Text("Packets sent: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['packets_sent']))],
+            [sg.Text("Packets received: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['packets_recv']))],
+            [sg.Text("Errors in: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['errin']))],
+            [sg.Text("Dropped in: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['dropin']))],
+            [sg.Text("Dropped out: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(network_dict['dropout']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+
+        ]
+    network_menu = [[sg.Column(network_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
+        sg.Button("Generate report"),
+        sg.Button("Send report as email",),
+    ]]
+
     misc_menu = [
-        [sg.Text("Its the miscellanous menu")],
-        [sg.Button("Generate report"), sg.Button("Send report as email")],
+        [sg.Text("Miscellaneous Usage Summary -")],
     ]
+    misc_menu += [
+        [sg.Text("OS: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(g.os()))],
+        [sg.Text("Uptime: ", font=('Montserrat', 10, 'bold')), sg.Text('{} seconds'.format(g.uptime()))],
+    ]
+    for user_dict in users:
+        misc_menu += [
+            [sg.Text("Name: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(user_dict['name']))],
+            [sg.Text("Session started: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(user_dict['sess_started']))],
+            [sg.Text("Host: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(user_dict['host']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+        ]
+    misc_menu += [
+        [sg.Text("Total: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['total']))],
+        [sg.Text("Used: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes ({}%)'.format(swap_dict['used'], swap_dict['percent']))],
+        [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['free']))],
+        [sg.Text("Swapped in: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sin']))],
+        [sg.Text("Swapped out: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sout']))],
+       #  [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+
+    ]      
+    misc_menu = [[sg.Column(misc_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
+        sg.Button("Generate report"),
+        sg.Button("Send report as email",),
+    ]]
 
     # names = settings.get("names", ["None"])
     # email = settings.get("email", ["None"])
@@ -291,6 +411,7 @@ def main():
 
     while True:
         event, values = window.read()
+        # window['-update-'].update()
         print(values['-email-'])
         # print(values[0])
 
