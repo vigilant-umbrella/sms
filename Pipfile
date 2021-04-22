@@ -10,6 +10,7 @@ speedtest-cli = "*"
 fpdf = "*"
 pysimplegui = "*"
 keyring = "*"
+pyinstaller = "*"
 
 [dev-packages]
 autopep8 = "*"
