@@ -127,17 +127,22 @@ def layout(settings):
         [sg.Text("Process Usage Summary -")],
     ]
 
-    for process_dict in processes:
-        process_menu += [
-            [sg.Text("PID: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['pid']))],
-            [sg.Text("Name: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['name']))],
-            [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['user']))],
-            [sg.Text("Status: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['status']))],
-            [sg.Text("Created: ", font=('Montserrat', 10, 'bold')), sg.Text('{} seconds since the epoch'.format(process_dict['created']))],
-            [sg.Text("Memory: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(process_dict['memory']))],
-            [sg.Text("CPU: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(process_dict['cpu']))],
-            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-        ]
+    for i in range(10):
+        try:
+            process_dict = next(processes)
+            process_menu += [
+                [sg.Text("PID: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['pid']))],
+                [sg.Text("Name: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['name']))],
+                [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['user']))],
+                [sg.Text("Status: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(process_dict['status']))],
+                [sg.Text("Created: ", font=('Montserrat', 10, 'bold')), sg.Text('{} seconds since the epoch'.format(process_dict['created']))],
+                [sg.Text("Memory: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(process_dict['memory']))],
+                [sg.Text("CPU: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(process_dict['cpu']))],
+                [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
+            ]
+        except StopIteration:
+            break
+        
     process_menu = [[sg.Column(process_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
         sg.Button("Generate report"),
         sg.Button("Send report as email",),
