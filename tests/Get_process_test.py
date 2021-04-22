@@ -1,43 +1,37 @@
 import core
 
 g = core.Get()
+process = next(g.process())
+print(process)
 
 
-def test_process_1():
-    assert type(g.process()) is tuple
-
-
-def test_process_2():
-    assert len(g.process()) > 0
-
-
-def test_process_3():
-    assert type(g.process()[0]) is dict
+def test_process():
+    assert type(process) is dict
 
 
 def test_process_pid():
-    assert type(g.process()[0]['pid']) is int
+    assert type(process['pid']) is int
 
 
 def test_process_name():
-    assert type(g.process()[0]['name']) is str
+    assert type(process['name']) is str
 
 
 def test_process_user():
-    assert type(g.process()[0]['user']) is str
+    assert type(process['user']) is str
 
 
 def test_process_status():
-    assert type(g.process()[0]['status']) is str
+    assert type(process['status']) is str
 
 
 def test_process_created():
-    assert type(g.process()[0]['created']) is float
+    assert type(process['created']) is float
 
 
 def test_process_memory():
-    assert type(g.process()[0]['memory']) is float
+    assert type(process['memory']) is float
 
 
 def test_process_cpu():
-    assert type(g.process()[0]['cpu']) is float
+    assert type(process['cpu']) is float
