@@ -51,8 +51,6 @@ class Get:
         return result
 
     def process(self):
-        result = []
-
         for p in psutil.process_iter():
             p_dict = {}
             p_dict['pid'] = p.pid
@@ -62,9 +60,8 @@ class Get:
             p_dict['created'] = p.create_time()
             p_dict['memory'] = p.memory_percent()
             p_dict['cpu'] = p.cpu_percent(0)
-            result.append(p_dict)
 
-        return tuple(result)
+            yield p_dict
 
     def storage(self):
         result = []
@@ -92,7 +89,7 @@ class Get:
         for net in details.keys():
             net_dict = {}
             net_dict['interface'] = net
-            net_dict['ip'] = ip_details[net]['inet']
+            net_dict['ip'] = ip_details[net]['inet'] if ip_details[net]['inet'] != None else 'None'
             net_dict['bytes_sent'] = details[net].bytes_sent
             net_dict['bytes_recv'] = details[net].bytes_recv
             net_dict['packets_sent'] = details[net].packets_sent
