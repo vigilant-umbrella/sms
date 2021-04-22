@@ -81,7 +81,7 @@ def layout(settings):
 
     
     cpu_menu = [
-        [sg.Text("CPU Usage Summary -")],        
+        [sg.Text("CPU Usage Summary -", font=('Montserrat', 10, 'bold'))],        
         [sg.Text("Load Average: ", font=('Montserrat', 10, 'bold')), sg.Text('{}  {}  {}'.format(cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2]))],
         [sg.Text("User: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['user']))],
         [sg.Text("System: ", font=('Montserrat', 10, 'bold')), sg.Text('{} %'.format(cpu_dict['system']))],
@@ -108,7 +108,7 @@ def layout(settings):
 
 
     memory_menu = [
-        [sg.Text("Memory Usage Summary -")],
+        [sg.Text("Memory Usage Summary -", font=('Montserrat', 10, 'bold'))],
     ]
     memory_menu += [
         [sg.Text("Total: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(memory_dict['total']))],
@@ -124,7 +124,7 @@ def layout(settings):
     ]]
 
     process_menu = [
-        [sg.Text("Process Usage Summary -")],
+        [sg.Text("Process Usage Summary -", font=('Montserrat', 10, 'bold'))],
     ]
 
     for i in range(10):
@@ -149,7 +149,7 @@ def layout(settings):
     ]]
 
     storage_menu = [
-        [sg.Text("Storage Usage Summary -")],
+        [sg.Text("Storage Usage Summary -", font=('Montserrat', 10, 'bold'))],
     ]       
     for storage_dict in storages:
         storage_menu += [
@@ -168,7 +168,7 @@ def layout(settings):
     ]]
 
     network_menu = [
-        [sg.Text("Network Usage Summary -")],
+        [sg.Text("Network Usage Summary -", font=('Montserrat', 10, 'bold'))],
     ]
     for network_dict in networks:
         network_menu += [
@@ -190,7 +190,7 @@ def layout(settings):
     ]]
 
     misc_menu = [
-        [sg.Text("Miscellaneous Usage Summary -")],
+        [sg.Text("Miscellaneous Usage Summary -", font=('Montserrat', 10, 'bold'))],
     ]
     misc_menu += [
         [sg.Text("OS: ", font=('Montserrat', 10, 'bold')), sg.Text('{}'.format(g.os()))],
@@ -229,7 +229,7 @@ def layout(settings):
     else: n_e = [n+' - '+e for e, n in name_email.items()]
 
     settings = [
-        [sg.Text("Its the settings menu")],
+        # [sg.Text("Its the settings menu")],
         [sg.Text("Current name(s) - email(s): "), sg.Listbox(
             n_e, key="-email-", size=(100, 10), enable_events=True)],
         [
@@ -247,14 +247,14 @@ def layout(settings):
             sg.TabGroup(
                 [
                     [
-                        sg.Tab("Main Menu", main_menu),
-                        sg.Tab("CPU Menu", cpu_menu),
-                        sg.Tab("Memory Menu", memory_menu),
-                        sg.Tab("Process Menu", process_menu),
-                        sg.Tab("Storage Menu", storage_menu),
-                        sg.Tab("Network Menu", network_menu),
-                        sg.Tab("Misc Menu", misc_menu),
-                        sg.Tab("Settings Menu", settings),
+                        sg.Tab("Main Menu", main_menu, element_justification='center'),
+                        sg.Tab("CPU Menu", cpu_menu, element_justification='center'),
+                        sg.Tab("Memory Menu", memory_menu, element_justification='center'),
+                        sg.Tab("Process Menu", process_menu, element_justification='center'),
+                        sg.Tab("Storage Menu", storage_menu, element_justification='center'),
+                        sg.Tab("Network Menu", network_menu, element_justification='center'),
+                        sg.Tab("Misc Menu", misc_menu, element_justification='center'),
+                        sg.Tab("Settings Menu", settings, element_justification='center'),
                     ]
                 ],
                 border_width=5,
@@ -376,6 +376,23 @@ def add_record(settings):
     window.close()
 
 
+def set_notification_limit(settings):
+    notif_dict = settings.get('limit')
+    print(notif_dict)
+    layout = [[sg.Text("Set notification limits.", font=('Montserrat', 10, 'bold'))]]
+    for k, v in notif_dict.items():
+        layout += [[sg.Text(k)], [sg.Slider(range=(1, 100), default_value=v, orientation='h', enable_events=True, key=k)]]
+    layout += [[sg.Text("New values saved!", font=('Montserrat', 10, 'bold'), key='msg', visible=False)]]
+    window = sg.Window("Set notification limits", layout, finalize=True, modal=True)
+    while True:
+        event, values = window.read()
+        if event in ("CPU", "Memory", "Storage", "Swap"):
+            settings.set('limit', values)
+            window.Element('msg').Update(visible = True)
+        if event in ("Exit", sg.WIN_CLOSED):
+            break
+    window.close()
+
 def delete_record(values, settings):
     global name_email
     del name_email[str(values[0]).split()[-1]]
@@ -411,7 +428,7 @@ def main():
     while True:
         event, values = window.read()
         # window['-update-'].update()
-        print(values['-email-'])
+        # print(values['-email-'])
         # print(values[0])
 
         if event == sg.WIN_CLOSED:
@@ -457,8 +474,11 @@ def main():
                 n_e = [n+' - '+e for e, n in name_email.items()]
                 window["-email-"].update(n_e)
                 window.refresh()
+        
+        if event == "Set notification limit":
+            set_notification_limit(settings)
 
-    window.refresh()
+    # window.refresh()
     window.close()
 
 
