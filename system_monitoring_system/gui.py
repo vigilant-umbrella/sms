@@ -5,19 +5,13 @@ import keyring
 def layout(settings):
     global g
     cpu_dict = g.cpu()
-    # print(len(cpu_dict))
     memory_dict = g.memory()
-    # print(len(memory_dict))
     networks = g.network()
-    # print(len(networks))
     storages = g.storage()
-    # print(len(storages))
     swap_dict = g.swap()
-    # print(len(swap_dict))
     users = g.users()
-    # print(len(users))
     processes = g.process()
-    # print(len(processes))
+
     main_menu = [
         [sg.Text("Overall Usage Summary - ", font=('Montserrat', 10, 'bold'))],
         [sg.Text("Operating System: ", font=('Montserrat', 10, 'bold')), sg.Text(g.os())],
