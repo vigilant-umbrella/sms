@@ -5,16 +5,16 @@ name = "pypi"
 
 [packages]
 psutil = "*"
-ifcfg = "*"
 speedtest-cli = "*"
 fpdf = "*"
 pysimplegui = "*"
 keyring = "*"
-pyinstaller = "*"
+ifcfg = "*"
 
 [dev-packages]
 autopep8 = "*"
 pytest = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3"
