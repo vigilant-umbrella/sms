@@ -2,8 +2,7 @@ import PySimpleGUI as sg
 import core
 import keyring
 
-def layout(settings):
-    global g
+def layout(g, settings):
     cpu_dict = g.cpu()
     memory_dict = g.memory()
     networks = g.network()
@@ -223,7 +222,7 @@ def layout(settings):
     # settings.set("name-email", name_email)
     # name_email = settings.get("email", {"None":"No data found"}).items()
 
-    global name_email
+    name_email = settings.get("email", None)
     if name_email is None:
         n_e = ["File doesn't exist - No record found"]
     else: n_e = [n+' - '+e for e, n in name_email.items()]
@@ -322,7 +321,7 @@ def authenticate(settings):
 
 
 def change_record(val, settings):
-    global name_email
+    name_email = settings.get("email", None)
     # print(str(val[0]).split()[-1])
     layout = [
         [sg.Text("Enter the new name: ")],
@@ -349,7 +348,7 @@ def change_record(val, settings):
 
 
 def add_record(settings):
-    global name_email
+    name_email = settings.get("email", None)
     if name_email is None:
         name_email = {}
     # dict = settings.get("email", {"No record found" : "File doesn't exist"})
@@ -394,7 +393,7 @@ def set_notification_limit(settings):
     window.close()
 
 def delete_record(values, settings):
-    global name_email
+    name_email = settings.get("email", None)
     del name_email[str(values[0]).split()[-1]]
     settings.set("email", name_email)
     sg.popup("The selected record has been deleted.", title="Record deleted")
@@ -422,8 +421,14 @@ def change_password(settings):
 
 def main():
     auth = False
+    g = core.Get()
 
-    window = layout(settings)
+    sg.theme("SandyBeach")
+    sg.set_options(font=('Montserrat', 10))
+
+    settings = sg.UserSettings(filename="./settings.json")
+
+    window = layout(g, settings)
 
     while True:
         event, values = window.read()
@@ -483,13 +488,4 @@ def main():
 
 
 if __name__ == "__main__":
-    g = core.Get()
-
-    sg.theme("SandyBeach")
-    sg.set_options(font=('Montserrat', 10))
-
-    settings = sg.UserSettings(filename="./settings.json")
-    name_email = settings.get("email", None)
-
-    # name_email = [n+' - '+e for e, n in settings.get("email", {"None":"No data found"}).items()]
     main()
