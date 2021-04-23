@@ -121,6 +121,10 @@ def update_password():
     pass
 
 
+def send_email():
+    pass
+
+
 def start_monitoring():
     pass
 

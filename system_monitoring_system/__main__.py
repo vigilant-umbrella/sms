@@ -2,6 +2,7 @@ import cli
 import fire
 import gui
 import monitoring
+import report
 
 
 if __name__ == '__main__':
@@ -27,6 +28,8 @@ if __name__ == '__main__':
         '--update-email remove': cli.remove_email,
         '--update-email modify': cli.modify_email,
         '--update-password': cli.update_password,
+        '--send-email': cli.send_email,
+        '--down-report': report.down_report,
         '--start-monitoring': monitoring.start,
         '--gui': gui.main,
         '-g': gui.main
