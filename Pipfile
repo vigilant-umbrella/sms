@@ -10,6 +10,7 @@ fpdf = "*"
 pysimplegui = "*"
 keyring = "*"
 ifcfg = "*"
+fire = "*"
 
 [dev-packages]
 autopep8 = "*"
