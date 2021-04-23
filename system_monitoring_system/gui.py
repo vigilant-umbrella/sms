@@ -419,7 +419,7 @@ def change_password(settings):
 
     window.close()
 
-def parse_event(event):
+def parse_event(event, email, report_opt, email_opt):
     if event == "Change password":
         sg.popup("Select an email from the list and try again!",
                     title="No email selected")
@@ -458,29 +458,6 @@ def parse_event(event):
     if event == "Set notification limit":
         set_notification_limit(settings)
 
-    report_opt = {
-        '-report-main-': 'Main Menu',
-        '-report-cpu-' : 'CPU',
-        '-report-mem-' : 'Memory',
-        '-report-proc-': 'Process',
-        '-report-storage-': 'Storage',
-        '-report-net-' : 'Network',
-        '-report-misc-': 'Miscellaneous'
-    }
-    email_opt = {
-        '-email-main-': 'Main Menu',
-        '-email-cpu-' : 'CPU',
-        '-email-mem-' : 'Memory',
-        '-email-proc-': 'Process',
-        '-email-storage-': 'Storage',
-        '-email-net-' : 'Network',
-        '-email-misc-': 'Miscellaneous'
-    }
-
-    email = {
-        'id': None,
-        'password': None,
-    }
 
     if event in report_opt:
         file = report.down_report(report_opt[event])
@@ -491,27 +468,26 @@ def parse_event(event):
             layout = [
                 [sg.Text("Enter the email: ")],
                 [sg.InputText()],
-                [sg.Text("Enter the new email:")],
-                [sg.InputText()],
-                [sg.Button("Apply"), sg.Button("Exit")],
+                [sg.Text("Enter the password: ")],
+                [sg.InputText(password_char='*')],
+                [sg.Button("Save"), sg.Button("Exit")],
             ]
-            window = sg.Window("Change record", layout, finalize=True, modal=True)
+            window = sg.Window("Save details", layout, finalize=True, modal=True)
             while True:
                 event, values = window.read()
 
                 if event in ("Exit", sg.WIN_CLOSED):
                     break
 
-                elif event == "Apply":
-                    del name_email[str(val[0]).split()[-1]]
-                    name_email[values[1]] = values[0]
-                    # name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
-                    settings.set("email", name_email)
-                    sg.popup("Record changed successfully")
+                elif event == "Save":
+                    email['id'] = values[0]
+                    email['password'] = values[1]
                     break
             window.close()
-        file = report.send_email(email['id'], email['password'], report_opt[event])
-        sg.popup('Email sent to '+email['id']+'with attachment '+file, title="Report sent successfully!")
+        for k,  v in email.items():
+            print(k, v)
+        # file = report.send_email(email['id'], email['password'], report_opt[event])
+        # sg.popup('Email sent to '+email['id']+'with attachment '+file, title="Report sent successfully!")
 
 def parse_values(values):
     if values[0] == "Settings Menu":
@@ -531,10 +507,35 @@ def main():
 
     window = layout(g, settings)
 
+    email = {
+        'id': None,
+        'password': None,
+    }
+
+    report_opt = {
+        '-report-main-': 'Main Menu',
+        '-report-cpu-' : 'CPU',
+        '-report-mem-' : 'Memory',
+        '-report-proc-': 'Process',
+        '-report-storage-': 'Storage',
+        '-report-net-' : 'Network',
+        '-report-misc-': 'Miscellaneous'
+    }
+    email_opt = {
+        '-email-main-': 'Main Menu',
+        '-email-cpu-' : 'CPU',
+        '-email-mem-' : 'Memory',
+        '-email-proc-': 'Process',
+        '-email-storage-': 'Storage',
+        '-email-net-' : 'Network',
+        '-email-misc-': 'Miscellaneous'
+    }
+
+
     while True:
         event, values = window.read()
         print(event, values)
-        parse_event(event)
+        parse_event(event, email, report_opt, email_opt)
         parse_values(values)
         
         if event == sg.WIN_CLOSED:
