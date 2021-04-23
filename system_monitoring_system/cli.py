@@ -2,7 +2,7 @@ import core
 from exceptions import ArgumentError
 
 
-def print_main_menu():
+def summary():
     g = core.Get()
 
     text = 'OS: {} \t Uptime: {}'.format(g.os(), g.uptime())
@@ -69,34 +69,68 @@ def print_main_menu():
         print(text)
 
 
-def print_cpu():
+def cpu():
     pass
 
 
-def call(args):
-    if args[0] == '--summary' or args[0] == '-S':
-        print_main_menu()
-    elif args[0] == '--cpu' or args[0] == '-c':
-        print_cpu()
-    else:
-        msg = """
-        Invalid Arugment Provided
+def memory():
+    pass
 
-        Correct Arugments Available are:
-         o --summary or -S: To display the summary of all the resources of the system.
-         o --cpu or -c: To display info regarding the system CPU.
-         o --memory or -M: To display info regarding the system memory.
-         o --process or -p: To display info regarding the system processes.
-         o --storage or -s: To display info regarding the system storage.
-         o --network or -n: To display info regarding the system’s network connections.
-         o --misc or -m: To display miscellaneous system info.
-         o --update-limit <resource-name> <limit>: Updates notification limit for the provided resource.
-         o --update-email add <name> <email>: Adds a new email to the email list.
-         o --update-email remove <email>: Adds an email from the email list.
-         o --update-email modify <old_name> <old_email> <new_name> <new_email>: Updates info regarding an existing email.
-         o --update-password: Updates the authentication password.
-        """
-        raise ArgumentError(msg)
+
+def process():
+    pass
+
+
+def storage():
+    pass
+
+
+def network():
+    pass
+
+
+def misc():
+    pass
+
+
+def show_limit():
+    pass
+
+
+def update_limit(resource, limit):
+    pass
+
+
+def show_email():
+    pass
+
+
+def add_email(name, email):
+    pass
+
+
+def remove_email(email):
+    pass
+
+
+def modify_email(old_name, old_email, new_name, new_email):
+    pass
+
+
+def update_password():
+    pass
+
+
+def send_email():
+    pass
+
+
+def start_monitoring():
+    pass
+
+
+def start_gui():
+    pass
 
 
 if __name__ == '__main__':
