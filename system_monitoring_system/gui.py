@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import core
 import keyring
+import report
 
 def layout(g, settings):
     cpu_dict = g.cpu()
@@ -74,8 +75,8 @@ def layout(g, settings):
         ]
         
     main_menu = [[sg.Column(main_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-            sg.Button("Generate report"),
-            sg.Button("Send report as email",),
+            sg.Button("Generate report", key='-report-main-'),
+            sg.Button("Send report as email",key='-email-main-'),
         ]]
 
     
@@ -101,8 +102,8 @@ def layout(g, settings):
         counter += 1
     
     cpu_menu = [[sg.Column(cpu_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-cpu-'),
+        sg.Button("Send report as email",key='-email-cpu-'),
     ]]
 
 
@@ -118,8 +119,8 @@ def layout(g, settings):
 
     ]
     memory_menu = [[sg.Column(memory_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-mem-'),
+        sg.Button("Send report as email",key='-email-mem-'),
     ]]
 
     process_menu = [
@@ -143,8 +144,8 @@ def layout(g, settings):
             break
         
     process_menu = [[sg.Column(process_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-proc-'),
+        sg.Button("Send report as email", key='-email-proc-'),
     ]]
 
     storage_menu = [
@@ -162,8 +163,8 @@ def layout(g, settings):
             [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
         ]
     storage_menu = [[sg.Column(storage_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-storage-'),
+        sg.Button("Send report as email", key='-email-storage-'),
     ]]
 
     network_menu = [
@@ -184,8 +185,8 @@ def layout(g, settings):
 
         ]
     network_menu = [[sg.Column(network_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-net-'),
+        sg.Button("Send report as email", key='-email-net-'),
     ]]
 
     misc_menu = [
@@ -212,8 +213,8 @@ def layout(g, settings):
 
     ]      
     misc_menu = [[sg.Column(misc_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-misc-'),
+        sg.Button("Send report as email", key='-email-misc-'),
     ]]
 
     # names = settings.get("names", ["None"])
@@ -418,6 +419,106 @@ def change_password(settings):
 
     window.close()
 
+def parse_event(event):
+    if event == "Change password":
+        sg.popup("Select an email from the list and try again!",
+                    title="No email selected")
+        change_password(settings)
+
+    if event == "Add record":
+        add_record(settings)
+        n_e = [n+' - '+e for e, n in name_email.items()]
+        window["-email-"].update(n_e)
+        window.refresh()
+
+    if event == "Change record" and not values['-email-']:
+        sg.popup("Select an email from the list and try again!",
+                    title="No email selected")
+    elif event == "Change record" and values['-email-']:
+        if values['-email-'][0] == "File doesn't exist - No record found":
+            sg.popup("Add record and try again!", title="No record found")
+        else:
+            change_record(values['-email-'], settings)
+            n_e = [n+' - '+e for e, n in name_email.items()]
+            window["-email-"].update(n_e)
+            window.refresh()
+
+    if event == "Delete record" and not values['-email-']:
+        sg.popup("Select an email from the list and try again!",
+                    title="No email selected")
+    elif event == "Delete record" and values['-email-']:
+        if values['-email-'][0] == "File doesn't exist - No record found":
+            sg.popup("Add record and try again!", title="No record found")
+        else:
+            delete_record(values['-email-'], settings)
+            n_e = [n+' - '+e for e, n in name_email.items()]
+            window["-email-"].update(n_e)
+            window.refresh()
+    
+    if event == "Set notification limit":
+        set_notification_limit(settings)
+
+    report_opt = {
+        '-report-main-': 'Main Menu',
+        '-report-cpu-' : 'CPU',
+        '-report-mem-' : 'Memory',
+        '-report-proc-': 'Process',
+        '-report-storage-': 'Storage',
+        '-report-net-' : 'Network',
+        '-report-misc-': 'Miscellaneous'
+    }
+    email_opt = {
+        '-email-main-': 'Main Menu',
+        '-email-cpu-' : 'CPU',
+        '-email-mem-' : 'Memory',
+        '-email-proc-': 'Process',
+        '-email-storage-': 'Storage',
+        '-email-net-' : 'Network',
+        '-email-misc-': 'Miscellaneous'
+    }
+
+    email = {
+        'id': None,
+        'password': None,
+    }
+
+    if event in report_opt:
+        file = report.down_report(report_opt[event])
+        print('report saved to file = ', file)
+        sg.popup(report_opt[event] + " report saved to file " + file, title="Report generation successful!")
+    elif event in email_opt:
+        if email['id'] is None and email['password'] is None:
+            layout = [
+                [sg.Text("Enter the email: ")],
+                [sg.InputText()],
+                [sg.Text("Enter the new email:")],
+                [sg.InputText()],
+                [sg.Button("Apply"), sg.Button("Exit")],
+            ]
+            window = sg.Window("Change record", layout, finalize=True, modal=True)
+            while True:
+                event, values = window.read()
+
+                if event in ("Exit", sg.WIN_CLOSED):
+                    break
+
+                elif event == "Apply":
+                    del name_email[str(val[0]).split()[-1]]
+                    name_email[values[1]] = values[0]
+                    # name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
+                    settings.set("email", name_email)
+                    sg.popup("Record changed successfully")
+                    break
+            window.close()
+        file = report.send_email(email['id'], email['password'], report_opt[event])
+        sg.popup('Email sent to '+email['id']+'with attachment '+file, title="Report sent successfully!")
+
+def parse_values(values):
+    if values[0] == "Settings Menu":
+        if not auth:
+            auth = authenticate(settings)
+            if not auth:
+                window.Element("Main Menu").select()
 
 def main():
     auth = False
@@ -432,60 +533,17 @@ def main():
 
     while True:
         event, values = window.read()
+        print(event, values)
+        parse_event(event)
+        parse_values(values)
+        
+        if event == sg.WIN_CLOSED:
+            break
         # window['-update-'].update()
         # print(values['-email-'])
         # print(values[0])
-
-        if event == sg.WIN_CLOSED:
-            break
-
-        if values[0] == "Settings Menu":
-            if not auth:
-                auth = authenticate(settings)
-                if not auth:
-                    window.Element("Main Menu").select()
-
-        if event == "Change password":
-            sg.popup("Select an email from the list and try again!",
-                     title="No email selected")
-            change_password(settings)
-
-        if event == "Add record":
-            add_record(settings)
-            n_e = [n+' - '+e for e, n in name_email.items()]
-            window["-email-"].update(n_e)
-            window.refresh()
-
-        if event == "Change record" and not values['-email-']:
-            sg.popup("Select an email from the list and try again!",
-                     title="No email selected")
-        elif event == "Change record" and values['-email-']:
-            if values['-email-'][0] == "File doesn't exist - No record found":
-                sg.popup("Add record and try again!", title="No record found")
-            else:
-                change_record(values['-email-'], settings)
-                n_e = [n+' - '+e for e, n in name_email.items()]
-                window["-email-"].update(n_e)
-                window.refresh()
-
-        if event == "Delete record" and not values['-email-']:
-            sg.popup("Select an email from the list and try again!",
-                     title="No email selected")
-        elif event == "Delete record" and values['-email-']:
-            if values['-email-'][0] == "File doesn't exist - No record found":
-                sg.popup("Add record and try again!", title="No record found")
-            else:
-                delete_record(values['-email-'], settings)
-                n_e = [n+' - '+e for e, n in name_email.items()]
-                window["-email-"].update(n_e)
-                window.refresh()
-        
-        if event == "Set notification limit":
-            set_notification_limit(settings)
-
     # window.refresh()
     window.close()
-
 
 if __name__ == "__main__":
     main()
