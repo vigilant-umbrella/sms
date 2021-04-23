@@ -1,12 +1,19 @@
 import core
 from exceptions import ArgumentError
 from fpdf import FPDF
+import os
 
 
 def create_report(resource):
     pdf = FPDF(orientation='P', format='A4')
-    pdf.add_font('Montserrat', '', 'Montserrat-Regular.ttf', uni=True)
-    pdf.add_font('Montserrat', 'B', 'Montserrat-Bold.ttf', uni=True)
+    if os.name == 'nt':
+        pdf.add_font('Montserrat', '', 'Montserrat-Regular.ttf', uni=True)
+        pdf.add_font('Montserrat', 'B', 'Montserrat-Bold.ttf', uni=True)
+    else:
+        pdf.add_font('Montserrat', '',
+                     '/home/.sms/Montserrat-Regular.ttf', uni=True)
+        pdf.add_font('Montserrat', 'B',
+                     '/home/.sms/Montserrat-Bold.ttf', uni=True)
 
     g = core.Get()
 
