@@ -27,6 +27,8 @@ def down_report(resource='Summary'):
     filename = '/report_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'.pdf'
     pdf.output(download_folder+filename, 'F')
 
+    return download_folder+filename
+
 
 def send_email(email, password, resource='Summary'):
     pdf = helper.create_report(resource)
