@@ -419,7 +419,7 @@ def change_password(settings):
 
     window.close()
 
-def parse_event(event, email, report_opt, email_opt):
+def parse_event(event, email, report_opt, email_opt, settings):
     if event == "Change password":
         sg.popup("Select an email from the list and try again!",
                     title="No email selected")
@@ -484,12 +484,17 @@ def parse_event(event, email, report_opt, email_opt):
                     email['password'] = values[1]
                     break
             window.close()
+        # sg.popup("")
         for k,  v in email.items():
             print(k, v)
-        # file = report.send_email(email['id'], email['password'], report_opt[event])
-        # sg.popup('Email sent to '+email['id']+'with attachment '+file, title="Report sent successfully!")
+        file = report.send_email(email['id'], email['password'], report_opt[event])
+        # name_email = settings.get("email", None)
+        # ems = ""
+        for k, v in name_email.items():
+            ems += k+'\n'
+        sg.popup('Email sent from '+email['id']+' to the added emails with attachment '+file, title="Report sent successfully!")
 
-def parse_values(values):
+def parse_values(values, auth, settings):
     if values[0] == "Settings Menu":
         if not auth:
             auth = authenticate(settings)
@@ -513,7 +518,7 @@ def main():
     }
 
     report_opt = {
-        '-report-main-': 'Main Menu',
+        '-report-main-': 'Summary',
         '-report-cpu-' : 'CPU',
         '-report-mem-' : 'Memory',
         '-report-proc-': 'Process',
@@ -522,7 +527,7 @@ def main():
         '-report-misc-': 'Miscellaneous'
     }
     email_opt = {
-        '-email-main-': 'Main Menu',
+        '-email-main-': 'Summary',
         '-email-cpu-' : 'CPU',
         '-email-mem-' : 'Memory',
         '-email-proc-': 'Process',
@@ -535,8 +540,8 @@ def main():
     while True:
         event, values = window.read()
         print(event, values)
-        parse_event(event, email, report_opt, email_opt)
-        parse_values(values)
+        parse_event(event, email, report_opt, email_opt, settingscd )
+        parse_values(values, auth, settings)
         
         if event == sg.WIN_CLOSED:
             break
