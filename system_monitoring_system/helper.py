@@ -21,7 +21,7 @@ def create_report(resource):
 
     g = core.Get()
 
-    if resource == 'Main Menu':
+    if resource == 'Summary':
         pdf.add_page()
         pdf.set_author('SMS')
 
@@ -372,7 +372,18 @@ def create_report(resource):
         pdf.cell(0, h=5, txt=text, ln=1)
 
     else:
-        msg = 'Invalid Arugment Provided while creating report.'
+        msg = """
+Invalid Resource Name provided.
+
+The following options are available:
+ - Summary
+ - CPU
+ - Memory
+ - Network
+ - Storage
+ - Process
+ - Miscellaneous
+"""
         raise ArgumentError(msg)
 
     return pdf

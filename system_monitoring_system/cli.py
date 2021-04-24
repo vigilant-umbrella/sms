@@ -1,5 +1,7 @@
 import core
 from exceptions import ArgumentError
+import getpass
+import report
 
 
 def summary():
@@ -121,8 +123,12 @@ def update_password():
     pass
 
 
-def send_email():
-    pass
+def send_email(resource='Summary'):
+    email = input('Google account email: ')
+    password = getpass.getpass()
+    report.send_email(email, password, resource)
+
+    print('Mail Sent')
 
 
 def start_monitoring():
