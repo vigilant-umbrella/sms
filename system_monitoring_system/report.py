@@ -10,7 +10,7 @@ import os
 import smtplib
 
 
-def down_report(resource='Main Menu'):
+def down_report(resource='Summary'):
     pdf = helper.create_report(resource)
 
     download_folder = ''
@@ -27,8 +27,10 @@ def down_report(resource='Main Menu'):
     filename = '/report_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'.pdf'
     pdf.output(download_folder+filename, 'F')
 
+    return download_folder+filename
 
-def send_email(email, password, resource='Main Menu'):
+
+def send_email(email, password, resource='Summary'):
     pdf = helper.create_report(resource)
 
     filename = 'report_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'.pdf'
@@ -93,7 +95,8 @@ def send_email(email, password, resource='Main Menu'):
         raise AuthenticationError(msg)
 
     session.quit()
-    print('Mail Sent')
+
+    return filename
 
 
 if __name__ == '__main__':
