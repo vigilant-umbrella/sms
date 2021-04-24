@@ -33,9 +33,15 @@ def send_email(email, password, resource='Summary'):
 
     filename = 'report_'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'.pdf'
 
-    settings_file = open('system_monitoring_system/settings.json')
+    settings_file = open(os.path.join(
+        os.path.expanduser('~'), '.sms/settings.json'))
     settings = json.load(settings_file)
+    settings_file.close()
+
     receivers = list(settings['email'].keys())
+
+    assert len(
+        receivers) > 0, '\nNo receivering emails present. Update settings to add people to emailing list\n'
 
     # Setup the MIME
     message = MIMEMultipart()

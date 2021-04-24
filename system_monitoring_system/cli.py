@@ -1,6 +1,9 @@
 import core
 from exceptions import ArgumentError
 import getpass
+import json
+import keyring
+import os
 import report
 
 
@@ -96,31 +99,144 @@ def misc():
 
 
 def show_limit():
-    pass
+    settings_file = open(os.path.join(
+        os.path.expanduser('~'), '.sms/settings.json'))
+    settings = json.load(settings_file)
+    settings_file.close()
+
+    for resource, value in settings['limit'].items():
+        print('{} - {}'.format(resource, value))
 
 
 def update_limit(resource, limit):
-    pass
+    if resource not in ['cpu', 'memory', 'storage', 'swap']:
+        msg = """
+Invalid resource name entered.
+
+Valid resource names are:
+ - cpu
+ - memory
+ - storage
+ - swap
+"""
+        raise ArgumentError(msg)
+
+    if limit >= 100 or limit <= 0:
+        msg = """
+Invalid limit entered.
+
+Limit must be between 0 and 100.
+"""
+        raise ArgumentError(msg)
+
+    file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
+    settings_file = open(file_path)
+    settings = json.load(settings_file)
+    settings_file.close()
+
+    settings['limit'][resource] = limit
+
+    with open(file_path, 'w') as f:
+        json.dump(settings, f)
 
 
 def show_email():
-    pass
+    settings_file = open(os.path.join(
+        os.path.expanduser('~'), '.sms/settings.json'))
+    settings = json.load(settings_file)
+    settings_file.close()
+
+    for email, name in settings['email'].items():
+        print('{} - {}'.format(name, email))
+
+
+def update_email(action, *args):
+    if action not in ['add', 'modify', 'remove']:
+        msg = """
+Invalid action entered.
+
+Valid actions are:
+ - add
+ - modify
+ - remove
+"""
+        raise ArgumentError(msg)
+
+    if action == 'add':
+        if len(args) != 2:
+            raise ArgumentError
+        add_email(*args)
+    elif action == 'modify':
+        if len(args) != 4:
+            raise ArgumentError
+        modify_email(*args)
+    elif action == 'remove':
+        if len(args) != 1:
+            print(args)
+            raise ArgumentError
+        remove_email(*args)
 
 
 def add_email(name, email):
-    pass
+    file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
+    settings_file = open(file_path)
+    settings = json.load(settings_file)
+    settings_file.close()
 
+    settings['email'][email] = name
 
-def remove_email(email):
-    pass
+    with open(file_path, 'w') as f:
+        json.dump(settings, f)
 
 
 def modify_email(old_name, old_email, new_name, new_email):
-    pass
+    file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
+    settings_file = open(file_path)
+    settings = json.load(settings_file)
+    settings_file.close()
+
+    if old_email not in settings['email']:
+        msg = 'email provided does not exist.'
+        raise ArgumentError(msg)
+
+    del settings['email'][old_email]
+
+    settings['email'][new_email] = new_name
+
+    with open(file_path, 'w') as f:
+        json.dump(settings, f)
+
+
+def remove_email(email):
+    file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
+    settings_file = open(file_path)
+    settings = json.load(settings_file)
+    settings_file.close()
+
+    if email not in settings['email']:
+        msg = 'email provided does not exist.'
+        raise ArgumentError(msg)
+
+    del settings['email'][email]
+
+    with open(file_path, 'w') as f:
+        json.dump(settings, f)
 
 
 def update_password():
-    pass
+    user_old_password = getpass.getpass(prompt='Old Password: ')
+    old_password = keyring.get_password('sms_password', 'Administrator')
+    if user_old_password != old_password:
+        print('\nWrong Password entered')
+        return
+
+    new_password = getpass.getpass(prompt='New Password: ')
+    conf_new_password = getpass.getpass(prompt='Confirm New Password: ')
+    if new_password != conf_new_password:
+        print('\nPassword Mismatch')
+        return
+
+    keyring.set_password('sms_password', 'Administrator', new_password)
 
 
 def send_email(resource='Summary'):
@@ -129,14 +245,6 @@ def send_email(resource='Summary'):
     report.send_email(email, password, resource)
 
     print('Mail Sent')
-
-
-def start_monitoring():
-    pass
-
-
-def start_gui():
-    pass
 
 
 if __name__ == '__main__':
