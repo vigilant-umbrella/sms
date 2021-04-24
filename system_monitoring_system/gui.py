@@ -34,8 +34,6 @@ def layout(g, settings):
         
     ]   
     
-    # [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
-
     main_menu += [ [sg.Text("\nNetwork - ", font=('Montserrat', 10, 'bold'))] ] 
 
     for network_dict in networks:
@@ -63,7 +61,6 @@ def layout(g, settings):
         [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['free']))],
         [sg.Text("Swapped in: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sin']))],
         [sg.Text("Swapped out: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sout']))],
-        # [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
     ]   
 
     main_menu += [ [sg.Text("\nUsers - ", font=('Montserrat', 10, 'bold'))] ] 
@@ -210,7 +207,6 @@ def layout(g, settings):
         [sg.Text("Free: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['free']))],
         [sg.Text("Swapped in: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sin']))],
         [sg.Text("Swapped out: ", font=('Montserrat', 10, 'bold')), sg.Text('{:,} Bytes'.format(swap_dict['sout']))],
-       #  [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
 
     ]      
     misc_menu = [[sg.Column(misc_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
@@ -218,19 +214,12 @@ def layout(g, settings):
         sg.Button("Send report as email", key='-email-misc-'),
     ]]
 
-    # names = settings.get("names", ["None"])
-    # email = settings.get("email", ["None"])
-    # name_email = [n+" - "+e for n, e in zip(names, email)]
-    # settings.set("name-email", name_email)
-    # name_email = settings.get("email", {"None":"No data found"}).items()
-
     name_email = settings.get("email", None)
     if name_email is None:
         n_e = ["File doesn't exist - No record found"]
     else: n_e = [n+' - '+e for e, n in name_email.items()]
 
     settings = [
-        # [sg.Text("Its the settings menu")],
         [sg.Text("Current name(s) - email(s): "), sg.Listbox(
             n_e, key="-email-", size=(100, 10), enable_events=True)],
         [
@@ -269,8 +258,6 @@ def layout(g, settings):
         "System Monitoring System", layout, size=(1000, 800),
         element_justification="c"
     )
-    # window["abc"].Widget.configure(highlightcolor='red',
-    # highlightthickness=2)
     return window
 
 
@@ -317,7 +304,6 @@ def authenticate(settings):
 
 def change_record(val, settings):
     name_email = settings.get("email", None)
-    # print(str(val[0]).split()[-1])
     layout = [
         [sg.Text("Enter the new name: ")],
         [sg.InputText()],
@@ -339,7 +325,6 @@ def change_record(val, settings):
                 try:
                     del name_email[str(val[0]).split()[-1]]
                     name_email[values[1]] = values[0]
-                    # name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
                     settings.set("email", name_email)
                     sg.popup("Record changed successfully")
                     break
@@ -353,7 +338,6 @@ def add_record(settings):
     name_email = settings.get("email", None)
     if name_email is None:
         name_email = {}
-    # dict = settings.get("email", {"No record found" : "File doesn't exist"})
     layout = [        
         [sg.Text("Enter the new name: ")],
         [sg.InputText()],
@@ -373,7 +357,6 @@ def add_record(settings):
                 sg.popup("Blank input is not acceptable. Enter something and try again!", title='Error')
             else:
                 name_email.update({values[1]: values[0]})
-                # dict.update({values[1]: values[0]})
                 settings.set("email", name_email)
                 sg.popup("Record added successfully")
                 break
@@ -382,7 +365,6 @@ def add_record(settings):
 
 def set_notification_limit(settings):
     notif_dict = settings.get('limit')
-    # print(notif_dict)
     layout = [[sg.Text("Set notification limits.", font=('Montserrat', 10, 'bold'))]]
     for k, v in notif_dict.items():
         layout += [[sg.Text(k)], [sg.Slider(range=(1, 100), default_value=v, orientation='h', enable_events=True, key=k)]]
@@ -430,9 +412,6 @@ def change_password(settings):
 
     window.close()
 
-# def parse_event(event, email, report_opt, email_opt, settings):
-
-# def parse_values(values, auth, settings):
 
 def email_report(email, resource):
     if email['id'] is None and email['password'] is None:
@@ -501,10 +480,6 @@ def main():
 
     while True:
         event, values = window.read()
-        # print(event, values)
-        # parse_event(event, email, report_opt, email_opt, settingscd )
-        # parse_values(values, auth, settings)
-
         name_email = settings.get("email", None)
         try:
             if values[0] == "Settings Menu":
@@ -556,7 +531,6 @@ def main():
 
         if event in report_opt:
             file = report.down_report(report_opt[event])
-            # print('report saved to file = ', file)
             sg.popup(report_opt[event] + " report saved to file " + file, title="Report generation successful!")
         elif event in email_opt:
             if not name_email:
@@ -564,10 +538,6 @@ def main():
             else:
                 email_report(email, email_opt[event])
 
-        # window['-update-'].update()
-        # print(values['-email-'])
-        # print(values[0])
-    # window.refresh()
     window.close()
 
 if __name__ == "__main__":
