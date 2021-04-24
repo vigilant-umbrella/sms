@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import core
 import keyring
 import report
+import os
 
 def layout(g, settings):
     cpu_dict = g.cpu()
@@ -283,6 +284,8 @@ def authenticate(settings):
         ]
         window = sg.Window("NEW password", layout, finalize=True, modal=True)
         event, values = window.read()
+        if values[0] == '':
+            sg.popup("Blank input is not acceptable. Enter something and try again!", title='Error')
         keyring.set_password('sms_password', 'Administrator', values[0])
         window.close()
         return True    
@@ -299,22 +302,13 @@ def authenticate(settings):
         while True:
             event, values = window.read()
 
-            if (values[0] != password) or event in (
-                "Exit",
-                sg.WIN_CLOSED,
-            ):
-                sg.popup(
-                    "Error in Authentication, taking back to main menu.",
-                    title="Authentication error",
-                )
+            if (event in ("Exit", sg.WIN_CLOSED) or (values[0] != password)):
+                sg.popup("Error in Authentication, taking back to main menu.", title="Authentication error")
                 auth = False
                 break
 
-            if values[0] == password:
-                sg.popup(
-                    "You can now access the settings menu.",
-                    title="Authentication successful",
-                )
+            elif values[0] == password:
+                sg.popup("You can now access the settings menu.", title="Authentication successful")
                 auth = True
                 break
         window.close()
@@ -339,12 +333,19 @@ def change_record(val, settings):
             break
 
         elif event == "Apply":
-            del name_email[str(val[0]).split()[-1]]
-            name_email[values[1]] = values[0]
-            # name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
-            settings.set("email", name_email)
-            sg.popup("Record changed successfully")
-            break
+            if values[0] == '' or values[1] == '':
+                sg.popup("Blank input is not acceptable. Enter something and try again!", title='Error')
+            else:
+                try:
+                    del name_email[str(val[0]).split()[-1]]
+                    name_email[values[1]] = values[0]
+                    # name_email[:] = [values[0]+" - "+values[1] if x == val[0] else x for x in name_email]
+                    settings.set("email", name_email)
+                    sg.popup("Record changed successfully")
+                    break
+                except KeyError:
+                    sg.popup("Malformed JSON settings file. Delete it and start afresh!", title="Error")
+
     window.close()
 
 
@@ -368,11 +369,14 @@ def add_record(settings):
             break
 
         elif event == "Apply":
-            name_email.update({values[1]: values[0]})
-            # dict.update({values[1]: values[0]})
-            settings.set("email", name_email)
-            sg.popup("Record added successfully")
-            break
+            if values[0] == '' or values[1] == '':
+                sg.popup("Blank input is not acceptable. Enter something and try again!", title='Error')
+            else:
+                name_email.update({values[1]: values[0]})
+                # dict.update({values[1]: values[0]})
+                settings.set("email", name_email)
+                sg.popup("Record added successfully")
+                break
     window.close()
 
 
@@ -395,9 +399,13 @@ def set_notification_limit(settings):
 
 def delete_record(values, settings):
     name_email = settings.get("email", None)
-    del name_email[str(values[0]).split()[-1]]
-    settings.set("email", name_email)
-    sg.popup("The selected record has been deleted.", title="Record deleted")
+    try:
+        del name_email[str(values[0]).split()[-1]]    
+        settings.set("email", name_email)
+        sg.popup("The selected record has been deleted.", title="Record deleted")
+    except KeyError:
+        sg.popup("Malformed JSON settings file. Delete it and start afresh!", title="Error")
+
 
 def change_password(settings):
     layout = [
@@ -412,10 +420,13 @@ def change_password(settings):
         if event in ("Exit", sg.WIN_CLOSED):
             break
 
-        elif event == "Apply":
-            keyring.set_password('sms_password', 'Administrator', values[0])
-            sg.popup("Password changed successfully")
-            break
+        elif event == "Apply":            
+            if values[0] == '':
+                sg.popup("Blank input is not acceptable. Enter something and try again!", title='Error')
+            else:
+                keyring.set_password('sms_password', 'Administrator', values[0])
+                sg.popup("Password changed successfully")
+                break
 
     window.close()
 
@@ -440,18 +451,16 @@ def email_report(email, resource):
                 break
 
             elif event == "Save":
-                email['id'] = values[0]
-                email['password'] = values[1]
-                break
+                if values[0] == '' or values[1] == '':
+                    sg.popup("Blank input is not acceptable. Enter something and try again!", title='Error')
+                else:
+                    email['id'] = values[0]
+                    email['password'] = values[1]
+                    break
         window.close()
-    # sg.popup("")
-    # for k,  v in email.items():
-    #     print(k, v)
-    
-    # name_email = settings.get("email", None)
-    # ems = ""
-    # for k, v in name_email.items():
-    #     ems += k+'\n'
+    if email['id'] is None and email['password'] is None:
+        return
+
     file = report.send_email(email['id'], email['password'], resource)
     sg.popup('Email sent from '+email['id']+' to the added emails with attachment '+file, title="Report sent successfully!")
 
@@ -462,8 +471,7 @@ def main():
     sg.theme("SandyBeach")
     sg.set_options(font=('Montserrat', 10))
 
-    settings = sg.UserSettings(filename="/home/$USER/.sms/settings.json")
-
+    settings = sg.UserSettings(filename=os.path.join(os.path.expanduser('~'), '.sms/settings.json'))
     window = layout(g, settings)
 
     email = {
@@ -498,21 +506,22 @@ def main():
         # parse_values(values, auth, settings)
 
         name_email = settings.get("email", None)
-        if values[0] == "Settings Menu":
-            if not auth:
-                auth = authenticate(settings)
+        try:
+            if values[0] == "Settings Menu":
                 if not auth:
-                    window.Element("Main Menu").select()
-
+                    auth = authenticate(settings)
+                    if not auth:
+                        window.Element("Main Menu").select()
+        except TypeError:
+            break
         if event == sg.WIN_CLOSED:
             break
         if event == "Change password":
-            sg.popup("Select an email from the list and try again!",
-                        title="No email selected")
             change_password(settings)
 
         if event == "Add record":
             add_record(settings)
+            name_email = settings.get("email", None)
             n_e = [n+' - '+e for e, n in name_email.items()]
             window["-email-"].update(n_e)
             window.refresh()
@@ -550,7 +559,10 @@ def main():
             # print('report saved to file = ', file)
             sg.popup(report_opt[event] + " report saved to file " + file, title="Report generation successful!")
         elif event in email_opt:
-            email_report(email, email_opt[event])
+            if not name_email:
+                sg.popup("Add an email in the Settings menu and try again!", title="No email ids present")
+            else:
+                email_report(email, email_opt[event])
 
         # window['-update-'].update()
         # print(values['-email-'])
