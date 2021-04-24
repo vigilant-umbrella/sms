@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import core
 import keyring
+import report
 
 def layout(g, settings):
     cpu_dict = g.cpu()
@@ -74,8 +75,8 @@ def layout(g, settings):
         ]
         
     main_menu = [[sg.Column(main_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-            sg.Button("Generate report"),
-            sg.Button("Send report as email",),
+            sg.Button("Generate report", key='-report-main-'),
+            sg.Button("Send report as email",key='-email-main-'),
         ]]
 
     
@@ -101,8 +102,8 @@ def layout(g, settings):
         counter += 1
     
     cpu_menu = [[sg.Column(cpu_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-cpu-'),
+        sg.Button("Send report as email",key='-email-cpu-'),
     ]]
 
 
@@ -118,8 +119,8 @@ def layout(g, settings):
 
     ]
     memory_menu = [[sg.Column(memory_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-mem-'),
+        sg.Button("Send report as email",key='-email-mem-'),
     ]]
 
     process_menu = [
@@ -143,8 +144,8 @@ def layout(g, settings):
             break
         
     process_menu = [[sg.Column(process_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-proc-'),
+        sg.Button("Send report as email", key='-email-proc-'),
     ]]
 
     storage_menu = [
@@ -162,8 +163,8 @@ def layout(g, settings):
             [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()],
         ]
     storage_menu = [[sg.Column(storage_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-storage-'),
+        sg.Button("Send report as email", key='-email-storage-'),
     ]]
 
     network_menu = [
@@ -184,8 +185,8 @@ def layout(g, settings):
 
         ]
     network_menu = [[sg.Column(network_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-net-'),
+        sg.Button("Send report as email", key='-email-net-'),
     ]]
 
     misc_menu = [
@@ -212,8 +213,8 @@ def layout(g, settings):
 
     ]      
     misc_menu = [[sg.Column(misc_menu, scrollable=True, vertical_scroll_only=True, size=(1000,650))]] + [[
-        sg.Button("Generate report"),
-        sg.Button("Send report as email",),
+        sg.Button("Generate report", key='-report-misc-'),
+        sg.Button("Send report as email", key='-email-misc-'),
     ]]
 
     # names = settings.get("names", ["None"])
@@ -418,6 +419,41 @@ def change_password(settings):
 
     window.close()
 
+# def parse_event(event, email, report_opt, email_opt, settings):
+
+# def parse_values(values, auth, settings):
+
+def email_report(email, resource):
+    if email['id'] is None and email['password'] is None:
+        layout = [
+            [sg.Text("Enter the email: ")],
+            [sg.InputText()],
+            [sg.Text("Enter the password: ")],
+            [sg.InputText(password_char='*')],
+            [sg.Button("Save"), sg.Button("Exit")],
+        ]
+        window = sg.Window("Save details", layout, finalize=True, modal=True)
+        while True:
+            event, values = window.read()
+
+            if event in ("Exit", sg.WIN_CLOSED):
+                break
+
+            elif event == "Save":
+                email['id'] = values[0]
+                email['password'] = values[1]
+                break
+        window.close()
+    # sg.popup("")
+    for k,  v in email.items():
+        print(k, v)
+    
+    # name_email = settings.get("email", None)
+    # ems = ""
+    # for k, v in name_email.items():
+    #     ems += k+'\n'
+    file = report.send_email(email['id'], email['password'], resource)
+    sg.popup('Email sent from '+email['id']+' to the added emails with attachment '+file, title="Report sent successfully!")
 
 def main():
     auth = False
@@ -426,28 +462,51 @@ def main():
     sg.theme("SandyBeach")
     sg.set_options(font=('Montserrat', 10))
 
-    settings = sg.UserSettings(filename="./settings.json")
+    settings = sg.UserSettings(filename="/home/$USER/.sms/settings.json")
 
     window = layout(g, settings)
 
+    email = {
+        'id': None,
+        'password': None,
+    }
+
+    report_opt = {
+        '-report-main-': 'Summary',
+        '-report-cpu-' : 'CPU',
+        '-report-mem-' : 'Memory',
+        '-report-proc-': 'Process',
+        '-report-storage-': 'Storage',
+        '-report-net-' : 'Network',
+        '-report-misc-': 'Miscellaneous'
+    }
+    email_opt = {
+        '-email-main-': 'Summary',
+        '-email-cpu-' : 'CPU',
+        '-email-mem-' : 'Memory',
+        '-email-proc-': 'Process',
+        '-email-storage-': 'Storage',
+        '-email-net-' : 'Network',
+        '-email-misc-': 'Miscellaneous'
+    }
+
+
     while True:
         event, values = window.read()
-        # window['-update-'].update()
-        # print(values['-email-'])
-        # print(values[0])
-
-        if event == sg.WIN_CLOSED:
-            break
-
+        print(event, values)
+        # parse_event(event, email, report_opt, email_opt, settingscd )
+        # parse_values(values, auth, settings)
         if values[0] == "Settings Menu":
             if not auth:
                 auth = authenticate(settings)
                 if not auth:
                     window.Element("Main Menu").select()
 
+        if event == sg.WIN_CLOSED:
+            break
         if event == "Change password":
             sg.popup("Select an email from the list and try again!",
-                     title="No email selected")
+                        title="No email selected")
             change_password(settings)
 
         if event == "Add record":
@@ -458,7 +517,7 @@ def main():
 
         if event == "Change record" and not values['-email-']:
             sg.popup("Select an email from the list and try again!",
-                     title="No email selected")
+                        title="No email selected")
         elif event == "Change record" and values['-email-']:
             if values['-email-'][0] == "File doesn't exist - No record found":
                 sg.popup("Add record and try again!", title="No record found")
@@ -470,7 +529,7 @@ def main():
 
         if event == "Delete record" and not values['-email-']:
             sg.popup("Select an email from the list and try again!",
-                     title="No email selected")
+                        title="No email selected")
         elif event == "Delete record" and values['-email-']:
             if values['-email-'][0] == "File doesn't exist - No record found":
                 sg.popup("Add record and try again!", title="No record found")
@@ -483,9 +542,19 @@ def main():
         if event == "Set notification limit":
             set_notification_limit(settings)
 
+
+        if event in report_opt:
+            file = report.down_report(report_opt[event])
+            print('report saved to file = ', file)
+            sg.popup(report_opt[event] + " report saved to file " + file, title="Report generation successful!")
+        elif event in email_opt:
+            email_report(email, email_opt[event])
+
+        # window['-update-'].update()
+        # print(values['-email-'])
+        # print(values[0])
     # window.refresh()
     window.close()
-
 
 if __name__ == "__main__":
     main()
