@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir /home/.sms
+sudo mkdir /home/$USER/.sms
 
 pip3 install -q pipenv
 
@@ -12,4 +12,6 @@ sudo mv sms /usr/local/bin
 sudo rm -rf build
 sudo rm sms.spec
 
-sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf /home/.sms
+sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf /home/$USER/.sms
+
+echo "Installation Complete"

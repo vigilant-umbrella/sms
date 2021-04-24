@@ -6,14 +6,18 @@ import os
 
 def create_report(resource):
     pdf = FPDF(orientation='P', format='A4')
-    if os.name == 'nt':
-        pdf.add_font('Montserrat', '', 'Montserrat-Regular.ttf', uni=True)
-        pdf.add_font('Montserrat', 'B', 'Montserrat-Bold.ttf', uni=True)
-    else:
-        pdf.add_font('Montserrat', '',
-                     '/home/.sms/Montserrat-Regular.ttf', uni=True)
-        pdf.add_font('Montserrat', 'B',
-                     '/home/.sms/Montserrat-Bold.ttf', uni=True)
+    try:
+        if os.name == 'nt':
+            pdf.add_font('Montserrat', '', 'Montserrat-Regular.ttf', uni=True)
+            pdf.add_font('Montserrat', 'B', 'Montserrat-Bold.ttf', uni=True)
+        else:
+            pdf.add_font('Montserrat', '', os.path.join(
+                os.path.expanduser('~'), '.sms/Montserrat-Regular.ttf'), uni=True)
+            pdf.add_font('Montserrat', 'B', os.path.join(
+                os.path.expanduser('~'), '.sms/Montserrat-Bold.ttf'), uni=True)
+        font_style = 'Montserrat'
+    except:
+        font_style = 'Arial'
 
     g = core.Get()
 
@@ -21,16 +25,16 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='Overall Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         text = 'OS: {}'.format(g.os())
         pdf.cell(0, h=5, txt=text, ln=1)
         text = 'Uptime: {} seconds'.format(g.uptime())
@@ -38,9 +42,9 @@ def create_report(resource):
         pdf.ln()
 
         # CPU data
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='CPU:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         cpu_dict = g.cpu()
         text = 'Load Average: {} {} {}'.format(
             cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2])
@@ -58,9 +62,9 @@ def create_report(resource):
         pdf.ln()
 
         # Memory data
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Memory:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         memory_dict = g.memory()
         text = 'Total: {:,} Bytes'.format(memory_dict['total'])
         pdf.cell(0, h=5, txt=text, ln=1)
@@ -71,9 +75,9 @@ def create_report(resource):
         pdf.ln()
 
         # Network data
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Network:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         networks = g.network()
         for network_dict in networks:
             text = 'Interface: {}'.format(network_dict['interface'])
@@ -83,9 +87,9 @@ def create_report(resource):
             pdf.ln()
 
         # Storage data
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Storage:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         storages = g.storage()
         for storage_dict in storages:
             text = 'Device: {}'.format(storage_dict['device'])
@@ -102,9 +106,9 @@ def create_report(resource):
             pdf.ln()
 
         # Swap data
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Swap:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         swap_dict = g.swap()
         text = 'Total: {:,} Bytes'.format(swap_dict['total'])
         pdf.cell(0, h=5, txt=text, ln=1)
@@ -120,9 +124,9 @@ def create_report(resource):
         pdf.ln()
 
         # Users data
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Users:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         users = g.users()
         for user_dict in users:
             text = 'Name: {}'.format(user_dict['name'])
@@ -137,18 +141,18 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='CPU Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Overall:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         cpu_dict = g.cpu()
         text = 'Load Average: {} {} {}'.format(
             cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2])
@@ -165,10 +169,10 @@ def create_report(resource):
         counter = 1
         for cpu_core in cpu_dict['cores']:
             pdf.ln()
-            pdf.set_font('Montserrat', 'B', 16)
+            pdf.set_font(font_style, 'B', 16)
             text = 'Core {}:-'.format(counter)
             pdf.cell(0, h=15, txt=text, ln=1)
-            pdf.set_font('Montserrat', '', 12)
+            pdf.set_font(font_style, '', 12)
             text = 'User: {} %'.format(cpu_core['user'])
             pdf.cell(0, h=5, txt=text, ln=1)
             text = 'System: {} %'.format(cpu_core['system'])
@@ -183,16 +187,16 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='Memory Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         memory_dict = g.memory()
         text = 'Total: {:,} Bytes'.format(memory_dict['total'])
         pdf.cell(0, h=5, txt=text, ln=1)
@@ -211,16 +215,16 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='Network Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         networks = g.network()
         for network_dict in networks:
             text = 'Interface: {}'.format(network_dict['interface'])
@@ -256,16 +260,16 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='Storage Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         storages = g.storage()
         for storage_dict in storages:
             text = 'Device: {}'.format(storage_dict['device'])
@@ -289,16 +293,16 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='Process Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         processes = g.process()
         for process_dict in processes:
             text = 'PID: {}'.format(process_dict['pid'])
@@ -322,25 +326,25 @@ def create_report(resource):
         pdf.add_page()
         pdf.set_author('SMS')
 
-        pdf.set_font('Montserrat', 'B', 10)
+        pdf.set_font(font_style, 'B', 10)
         pdf.cell(0, txt='System Monitoring System', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 32)
+        pdf.set_font(font_style, 'B', 32)
         pdf.cell(0, h=25, txt='Report', ln=1, align='C')
 
-        pdf.set_font('Montserrat', 'B', 20)
+        pdf.set_font(font_style, 'B', 20)
         pdf.cell(0, h=15, txt='Miscellaneous Usage Summary - ', ln=1)
 
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         text = 'OS: {}'.format(g.os())
         pdf.cell(0, h=5, txt=text, ln=1)
         text = 'Uptime: {} seconds'.format(g.uptime())
         pdf.cell(0, h=5, txt=text, ln=1)
         pdf.ln()
 
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Users:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         users = g.users()
         for user_dict in users:
             text = 'Name: {}'.format(user_dict['name'])
@@ -351,9 +355,9 @@ def create_report(resource):
             pdf.cell(0, h=5, txt=text, ln=1)
             pdf.ln()
 
-        pdf.set_font('Montserrat', 'B', 16)
+        pdf.set_font(font_style, 'B', 16)
         pdf.cell(0, h=15, txt='Swap:-', ln=1)
-        pdf.set_font('Montserrat', '', 12)
+        pdf.set_font(font_style, '', 12)
         swap_dict = g.swap()
         text = 'Total: {:,} Bytes'.format(swap_dict['total'])
         pdf.cell(0, h=5, txt=text, ln=1)
