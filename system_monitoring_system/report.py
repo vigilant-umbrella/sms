@@ -96,6 +96,8 @@ def send_email(email, password, resource='Summary'):
 
     session.quit()
 
+    return filename
+
 
 if __name__ == '__main__':
     exit()
