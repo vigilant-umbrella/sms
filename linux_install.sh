@@ -10,7 +10,7 @@ fi
 pip3 install -q pipenv
 
 pipenv install --ignore-pipfile
-pipenv run pyinstaller --onefile --name sms --clean --distpath . --log-level ERROR system_monitoring_system/__main__.py
+pipenv run pyinstaller --onefile --name sms --clean --distpath . --log-level ERROR --hidden-import plyer.platforms.linux.notification system_monitoring_system/__main__.py
 
 sudo mv sms /usr/local/bin
 
