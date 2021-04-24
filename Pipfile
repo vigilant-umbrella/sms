@@ -12,6 +12,7 @@ keyring = "*"
 ifcfg = "*"
 pyinstaller = "*"
 fire = "*"
+plyer = "*"
 
 [dev-packages]
 autopep8 = "*"

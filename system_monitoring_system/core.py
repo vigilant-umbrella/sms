@@ -38,6 +38,9 @@ class Get:
 
         return result
 
+    def cpu_overall(self):
+        return psutil.cpu_percent(interval=1)
+
     def memory(self):
         result = {}
         details = psutil.virtual_memory()
