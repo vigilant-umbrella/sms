@@ -16,12 +16,14 @@ class Get:
 
     def cpu(self):
         result = {}
-        result['load_avg'] = os.getloadavg()
+        if os.name != 'nt':
+            result['load_avg'] = os.getloadavg()
         overall = psutil.cpu_times_percent(interval=1)
         result['user'] = overall.user
         result['system'] = overall.system
         result['idle'] = overall.idle
-        result['iowait'] = overall.iowait
+        if os.name != 'nt':
+            result['iowait'] = overall.iowait
 
         num_cores = 0
         cores_dicts = []
@@ -30,7 +32,8 @@ class Get:
             cores_dicts[num_cores]['user'] = core.user
             cores_dicts[num_cores]['system'] = core.system
             cores_dicts[num_cores]['idle'] = core.idle
-            cores_dicts[num_cores]['iowait'] = core.iowait
+            if os.name != 'nt':
+                cores_dicts[num_cores]['iowait'] = core.iowait
             num_cores += 1
 
         result['num_cores'] = num_cores
@@ -92,7 +95,8 @@ class Get:
         for net in details.keys():
             net_dict = {}
             net_dict['interface'] = net
-            net_dict['ip'] = ip_details[net]['inet'] if ip_details[net]['inet'] != None else 'None'
+            if os.name != 'nt':
+                net_dict['ip'] = ip_details[net]['inet'] if ip_details[net]['inet'] != None else 'None'
             net_dict['bytes_sent'] = details[net].bytes_sent
             net_dict['bytes_recv'] = details[net].bytes_recv
             net_dict['packets_sent'] = details[net].packets_sent

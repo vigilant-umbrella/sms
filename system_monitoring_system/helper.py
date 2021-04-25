@@ -46,17 +46,19 @@ def create_report(resource):
         pdf.cell(0, h=15, txt='CPU:-', ln=1)
         pdf.set_font(font_style, '', 12)
         cpu_dict = g.cpu()
-        text = 'Load Average: {} {} {}'.format(
-            cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2])
-        pdf.cell(0, h=5, txt=text, ln=1)
+        if os.name != 'nt':
+            text = 'Load Average: {} {} {}'.format(
+                cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2])
+            pdf.cell(0, h=5, txt=text, ln=1)
         text = 'User: {} %'.format(cpu_dict['user'])
         pdf.cell(0, h=5, txt=text, ln=1)
         text = 'System: {} %'.format(cpu_dict['system'])
         pdf.cell(0, h=5, txt=text, ln=1)
         text = 'Idle: {} %'.format(cpu_dict['idle'])
         pdf.cell(0, h=5, txt=text, ln=1)
-        text = 'I/O Wait: {} %'.format(cpu_dict['iowait'])
-        pdf.cell(0, h=5, txt=text, ln=1)
+        if os.name != 'nt':
+            text = 'I/O Wait: {} %'.format(cpu_dict['iowait'])
+            pdf.cell(0, h=5, txt=text, ln=1)
         text = 'Cores: {}'.format(cpu_dict['num_cores'])
         pdf.cell(0, h=5, txt=text, ln=1)
         pdf.ln()
@@ -82,8 +84,9 @@ def create_report(resource):
         for network_dict in networks:
             text = 'Interface: {}'.format(network_dict['interface'])
             pdf.cell(0, h=5, txt=text, ln=1)
-            text = 'IP: {}'.format(network_dict['ip'])
-            pdf.cell(0, h=5, txt=text, ln=1)
+            if os.name != 'nt':
+                text = 'IP: {}'.format(network_dict['ip'])
+                pdf.cell(0, h=5, txt=text, ln=1)
             pdf.ln()
 
         # Storage data
@@ -154,9 +157,10 @@ def create_report(resource):
         pdf.cell(0, h=15, txt='Overall:-', ln=1)
         pdf.set_font(font_style, '', 12)
         cpu_dict = g.cpu()
-        text = 'Load Average: {} {} {}'.format(
-            cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2])
-        pdf.cell(0, h=5, txt=text, ln=1)
+        if os.name != 'nt':
+            text = 'Load Average: {} {} {}'.format(
+                cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2])
+            pdf.cell(0, h=5, txt=text, ln=1)
         text = 'User: {} %'.format(cpu_dict['user'])
         pdf.cell(0, h=5, txt=text, ln=1)
         text = 'System: {} %'.format(cpu_dict['system'])
@@ -179,8 +183,9 @@ def create_report(resource):
             pdf.cell(0, h=5, txt=text, ln=1)
             text = 'Idle: {} %'.format(cpu_core['idle'])
             pdf.cell(0, h=5, txt=text, ln=1)
-            text = 'I/O Wait: {} %'.format(cpu_core['iowait'])
-            pdf.cell(0, h=5, txt=text, ln=1)
+            if os.name != 'nt':
+                text = 'I/O Wait: {} %'.format(cpu_core['iowait'])
+                pdf.cell(0, h=5, txt=text, ln=1)
             counter += 1
 
     elif resource == 'Memory':
@@ -229,8 +234,9 @@ def create_report(resource):
         for network_dict in networks:
             text = 'Interface: {}'.format(network_dict['interface'])
             pdf.cell(0, h=5, txt=text, ln=1)
-            text = 'IP: {}'.format(network_dict['ip'])
-            pdf.cell(0, h=5, txt=text, ln=1)
+            if os.name != 'nt':
+                text = 'IP: {}'.format(network_dict['ip'])
+                pdf.cell(0, h=5, txt=text, ln=1)
             text = 'Bytes sent: {}'.format(network_dict['bytes_sent'])
             pdf.cell(0, h=5, txt=text, ln=1)
             text = 'Bytes received: {}'.format(network_dict['bytes_recv'])
