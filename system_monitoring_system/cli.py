@@ -120,6 +120,9 @@ def misc():
 
 
 def show_limit():
+    """
+    Display notification limits
+    """
     settings_file = open(os.path.join(
         os.path.expanduser('~'), '.sms/settings.json'))
     settings = json.load(settings_file)
@@ -130,6 +133,9 @@ def show_limit():
 
 
 def update_limit(resource, limit):
+    """
+    Update notification limits
+    """
     if resource not in ['cpu', 'memory', 'storage', 'swap']:
         msg = """
 Invalid resource name entered.
@@ -162,6 +168,9 @@ Limit must be between 0 and 100.
 
 
 def show_email():
+    """
+    Display saved name and email address
+    """
     settings_file = open(os.path.join(
         os.path.expanduser('~'), '.sms/settings.json'))
     settings = json.load(settings_file)
@@ -199,6 +208,9 @@ Valid actions are:
 
 
 def add_email(name, email):
+    """
+    Add name and email address
+    """
     file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
     settings_file = open(file_path)
     settings = json.load(settings_file)
@@ -211,6 +223,9 @@ def add_email(name, email):
 
 
 def modify_email(old_name, old_email, new_name, new_email):
+    """
+    Modify saved name and email address
+    """
     file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
     settings_file = open(file_path)
     settings = json.load(settings_file)
@@ -229,6 +244,9 @@ def modify_email(old_name, old_email, new_name, new_email):
 
 
 def remove_email(email):
+    """
+    Remove name and email address
+    """
     file_path = os.path.join(os.path.expanduser('~'), '.sms/settings.json')
     settings_file = open(file_path)
     settings = json.load(settings_file)
@@ -245,6 +263,9 @@ def remove_email(email):
 
 
 def update_password():
+    """
+    Modify administrator password
+    """
     user_old_password = getpass.getpass(prompt='Old Password: ')
     old_password = keyring.get_password('sms_password', 'Administrator')
     if user_old_password != old_password:
@@ -261,6 +282,9 @@ def update_password():
 
 
 def send_email(resource='Summary'):
+    """
+    Send email to saved email address
+    """
     email = input('Google account email: ')
     password = getpass.getpass()
     report.send_email(email, password, resource)
