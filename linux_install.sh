@@ -14,7 +14,7 @@ pipenv run pyinstaller --onefile --name sms --clean --distpath . --log-level ERR
 
 sudo mv sms /usr/local/bin
 
-sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf /home/"$USER"/.sms
+sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf sms_icon.png /home/"$USER"/.sms
 
 FILE=/home/"$USER"/.sms/settings.json
 if [ ! -f "$FILE" ]; then
@@ -24,5 +24,27 @@ fi
 
 sudo rm -rf build
 sudo rm sms.spec
+
+echo -e "Do you want to add a desktop icon?[Y/n]: "
+read desktop_icon
+if [[ "$desktop_icon" == "y" || "$desktop_icon" == "Y" || "$desktop_icon" == "yes" || "$desktop_icon" == "Yes" ]]
+then
+    echo "#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=sms --gui
+Name=SMS
+Icon=/home/$USER/.sms/sms_icon.png
+" > /home/"$USER"/Desktop/SMS.desktop
+    sudo chmod +x /home/"$USER"/Desktop/SMS.desktop
+    echo -e "Do you want to add a menu icon?[Y/n]: "
+    read menu_icon
+    if [[ "$menu_icon" == "y" || "$menu_icon" == "Y" || "$menu_icon" == "yes" || "$menu_icon" == "Yes" ]]
+    then
+        sudo cp /home/"$USER"/Desktop/SMS.desktop /home/"$USER"/.local/share/applications/
+    fi
+fi
 
 echo "Installation Complete"
