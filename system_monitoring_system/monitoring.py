@@ -34,12 +34,14 @@ def start():
                         title='System Monitoring System', message=message)
 
             if 'storage' in limit:
-                storage_usage = g.storage()['percent']
-                if storage_usage >= limit['storage']:
-                    message = 'Storage limit reached\nCurrent Storage usage is {} %\nMaximum allowed limit is set at {} %'.format(
-                        storage_usage, limit['storage'])
-                    notification.notify(
-                        title='System Monitoring System', message=message)
+                storages = g.storage()
+                for storage in storages:
+                    storage_usage = storage['percent']
+                    if storage_usage >= limit['storage']:
+                        message = 'Storage limit reached for device {}\nCurrent Storage usage is {} %\nMaximum allowed limit is set at {} %'.format(
+                            storage['device'], storage_usage, limit['storage'])
+                        notification.notify(
+                            title='System Monitoring System', message=message)
 
             if 'swap' in limit:
                 swap_usage = g.swap()['percent']

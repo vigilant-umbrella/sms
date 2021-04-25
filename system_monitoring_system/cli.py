@@ -20,12 +20,19 @@ def summary():
     text = '\nCPU:-'
     print(text)
     cpu_dict = g.cpu()
-    text = 'Load Average: {} {} {} \t User: {} % \t System: {} %'.format(
-        cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2], cpu_dict['user'], cpu_dict['system'])
-    print(text)
-    text = 'Idle: {} % \t I/O Wait: {} % \t Cores: {}'.format(
-        cpu_dict['idle'], cpu_dict['iowait'], cpu_dict['num_cores'])
-    print(text)
+    if os.name == 'nt':
+        text = 'User: {} % \t System: {} % \t Idle: {} %'.format(
+            cpu_dict['idle'], cpu_dict['user'], cpu_dict['system'])
+        print(text)
+        text = 'Cores: {}'.format(cpu_dict['num_cores'])
+        print(text)
+    else:
+        text = 'Load Average: {} {} {} \t User: {} % \t System: {} %'.format(
+            cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2], cpu_dict['user'], cpu_dict['system'])
+        print(text)
+        text = 'Idle: {} % \t I/O Wait: {} % \t Cores: {}'.format(
+            cpu_dict['idle'], cpu_dict['iowait'], cpu_dict['num_cores'])
+        print(text)
 
     # Memory data
     text = '\nMemory:-'
@@ -40,9 +47,13 @@ def summary():
     print(text)
     networks = g.network()
     for network_dict in networks:
-        text = 'Interface: {} \t IP: {}'.format(
-            network_dict['interface'], network_dict['ip'])
-        print(text)
+        if os.name == 'nt':
+            text = 'Interface: {}'.format(network_dict['interface'])
+            print(text)
+        else:
+            text = 'Interface: {} \t IP: {}'.format(
+                network_dict['interface'], network_dict['ip'])
+            print(text)
 
     # Storage data
     text = '\nStorage:-'

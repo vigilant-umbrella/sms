@@ -101,7 +101,7 @@ def send_email(email, password, resource='Summary'):
         raise AuthenticationError(msg)
 
     session.quit()
-    print('Mail Sent')
+
     return filename
 
 
