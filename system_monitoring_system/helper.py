@@ -7,14 +7,10 @@ import os
 def create_report(resource):
     pdf = FPDF(orientation='P', format='A4')
     try:
-        if os.name == 'nt':
-            pdf.add_font('Montserrat', '', 'Montserrat-Regular.ttf', uni=True)
-            pdf.add_font('Montserrat', 'B', 'Montserrat-Bold.ttf', uni=True)
-        else:
-            pdf.add_font('Montserrat', '', os.path.join(
-                os.path.expanduser('~'), '.sms/Montserrat-Regular.ttf'), uni=True)
-            pdf.add_font('Montserrat', 'B', os.path.join(
-                os.path.expanduser('~'), '.sms/Montserrat-Bold.ttf'), uni=True)
+        pdf.add_font('Montserrat', '', os.path.join(
+            os.path.expanduser('~'), '.sms/Montserrat-Regular.ttf'), uni=True)
+        pdf.add_font('Montserrat', 'B', os.path.join(
+            os.path.expanduser('~'), '.sms/Montserrat-Bold.ttf'), uni=True)
         font_style = 'Montserrat'
     except:
         font_style = 'Arial'

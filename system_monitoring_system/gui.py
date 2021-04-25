@@ -148,7 +148,8 @@ def layout(g, settings):
             [sg.Text("System: ", font=('Montserrat', 10, 'bold')),
              sg.Text('{} %'.format(cpu_dict['system']))],
             [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('{} %'.format(cpu_dict['idle']))]
+             sg.Text('{} %'.format(cpu_dict['idle']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()]
         ]
     else:
         cpu_menu = [
@@ -162,7 +163,8 @@ def layout(g, settings):
             [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')),
              sg.Text('{} %'.format(cpu_dict['idle']))],
             [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('{} %'.format(cpu_dict['iowait']))]
+             sg.Text('{} %'.format(cpu_dict['iowait']))],
+            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()]
         ]
 
     counter = 1
