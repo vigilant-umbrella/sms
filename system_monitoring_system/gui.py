@@ -167,19 +167,32 @@ def layout(g, settings):
 
     counter = 1
     for cpu_core in cpu_dict['cores']:
-        cpu_menu += [
-            [sg.Text("Core: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('Core {}:-'.format(counter))],
-            [sg.Text("User: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('User: {} %'.format(cpu_core['user']))],
-            [sg.Text("System: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('System: {} %'.format(cpu_core['system']))],
-            [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('Idle: {} %'.format(cpu_core['idle']))],
-            [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')),
-             sg.Text('I/O Wait: {} %'.format(cpu_core['iowait']))],
-            [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()]
-        ]
+        if os.name == 'nt':
+            cpu_menu += [
+                [sg.Text("Core: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('Core {}:-'.format(counter))],
+                [sg.Text("User: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('User: {} %'.format(cpu_core['user']))],
+                [sg.Text("System: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('System: {} %'.format(cpu_core['system']))],
+                [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('Idle: {} %'.format(cpu_core['idle']))],
+                [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()]
+            ]
+        else:
+            cpu_menu += [
+                [sg.Text("Core: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('Core {}:-'.format(counter))],
+                [sg.Text("User: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('User: {} %'.format(cpu_core['user']))],
+                [sg.Text("System: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('System: {} %'.format(cpu_core['system']))],
+                [sg.Text("Idle: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('Idle: {} %'.format(cpu_core['idle']))],
+                [sg.Text("I/O Wait: ", font=('Montserrat', 10, 'bold')),
+                 sg.Text('I/O Wait: {} %'.format(cpu_core['iowait']))],
+                [sg.Text("", font=('Montserrat', 10, 'bold')), sg.Text()]
+            ]
         counter += 1
 
     cpu_menu = [[sg.Column(cpu_menu, scrollable=True, vertical_scroll_only=True, size=(1000, 650))]] + [[
