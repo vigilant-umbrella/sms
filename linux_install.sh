@@ -36,7 +36,7 @@ Type=Application
 Terminal=false
 Exec=sms --gui
 Name=SMS
-Icon=
+Icon=\"/home/\"$USER\"/Desktop/Desktop stuff/abcd\"
 " > /home/"$USER"/Desktop/SMS.desktop
 
     echo -e "Do you want to add a menu icon?[Y/n]: "
