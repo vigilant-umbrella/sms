@@ -14,7 +14,7 @@ pipenv run pyinstaller --onefile --name sms --clean --distpath . --log-level ERR
 
 sudo mv sms /usr/local/bin
 
-sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf /home/"$USER"/.sms
+sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf sms_icon.png /home/"$USER"/.sms
 
 FILE=/home/"$USER"/.sms/settings.json
 if [ ! -f "$FILE" ]; then
@@ -36,9 +36,9 @@ Type=Application
 Terminal=false
 Exec=sms --gui
 Name=SMS
-Icon=\"/home/\"$USER\"/Desktop/Desktop stuff/abcd\"
+Icon=/home/$USER/.sms/sms_icon.png
 " > /home/"$USER"/Desktop/SMS.desktop
-
+    sudo chmod +x /home/"$USER"/Desktop/SMS.desktop
     echo -e "Do you want to add a menu icon?[Y/n]: "
     read menu_icon
     if [[ "$menu_icon" == "y" || "$menu_icon" == "Y" || "$menu_icon" == "yes" || "$menu_icon" == "Yes" ]]
