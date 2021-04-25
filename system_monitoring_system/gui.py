@@ -444,6 +444,9 @@ def email_report(email, resource):
     sg.popup('Email sent from '+email['id']+' to the added emails with attachment '+file, title="Report sent successfully!")
 
 def main():
+    """
+    Opens GUI application
+    """
     auth = False
     g = core.Get()
 

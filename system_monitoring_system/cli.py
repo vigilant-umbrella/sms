@@ -8,6 +8,9 @@ import report
 
 
 def summary():
+    """
+    Display a summary of System usage data
+    """
     g = core.Get()
 
     text = 'OS: {} \t Uptime: {}'.format(g.os(), g.uptime())
@@ -75,26 +78,44 @@ def summary():
 
 
 def cpu():
+    """
+    Display detailed CPU usage data
+    """
     pass
 
 
 def memory():
+    """
+    Display detailed Memory usage data
+    """
     pass
 
 
 def process():
+    """
+    Display detailed Process usage data
+    """
     pass
 
 
 def storage():
+    """
+    Display detailed Storage usage data
+    """
     pass
 
 
 def network():
+    """
+    Display detailed Network usage data
+    """
     pass
 
 
 def misc():
+    """
+    Display Miscellaneous usage data
+    """
     pass
 
 
