@@ -18,7 +18,7 @@ sudo cp Montserrat-Bold.ttf Montserrat-Regular.ttf /home/"$USER"/.sms
 
 FILE=/home/"$USER"/.sms/settings.json
 if [ ! -f "$FILE" ]; then
-    sudo echo "{\"email\":{},\"limit\":{}}" > settings.json
+    sudo echo "{\"email\":{},\"limit\":{\"cpu\":75, \"memory\": 50, \"storage\": 60, \"swap\": 80}}" > settings.json
     sudo mv settings.json "$DIRECTORY"
 fi
 
