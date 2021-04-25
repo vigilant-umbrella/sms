@@ -8,19 +8,12 @@ import report
 if __name__ == '__main__':
     commands = {
         '--summary': cli.summary,
-        '-S': cli.summary,
         '--cpu': cli.cpu,
-        '-c': cli.cpu,
         '--memory': cli.memory,
-        '-M': cli.memory,
         '--process': cli.process,
-        '-p': cli.process,
         '--storage': cli.storage,
-        '-s': cli.storage,
         '--network': cli.network,
-        '-n': cli.network,
         '--misc': cli.misc,
-        '-m': cli.misc,
         '--show-limit': cli.show_limit,
         '--update-limit': cli.update_limit,
         '--show-email': cli.show_email,
@@ -30,6 +23,13 @@ if __name__ == '__main__':
         '--down-report': report.down_report,
         '--start-monitoring': monitoring.start,
         '--gui': gui.main,
+        '-S': cli.summary,
+        '-c': cli.cpu,
+        '-M': cli.memory,
+        '-p': cli.process,
+        '-s': cli.storage,
+        '-n': cli.network,
+        '-m': cli.misc,
         '-g': gui.main
     }
 

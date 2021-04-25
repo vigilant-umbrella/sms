@@ -38,7 +38,7 @@ def summary():
     text = '\nMemory:-'
     print(text)
     memory_dict = g.memory()
-    text = 'Total: {:,} Bytes \t Used: Used: {:,} Bytes \t Free: {:,} Bytes'.format(
+    text = 'Total: {:,} Bytes \t Used: {:,} Bytes \t Free: {:,} Bytes'.format(
         memory_dict['total'], memory_dict['used_incl'], memory_dict['free'])
     print(text)
 
@@ -92,42 +92,175 @@ def cpu():
     """
     Display detailed CPU usage data
     """
-    pass
+    g = core.Get()
+
+    text = 'CPU Usage:\n'
+    print(text)
+    cpu_dict = g.cpu()
+    if os.name == 'nt':
+        text = 'User: {} % \t System: {} % \t Idle: {} %'.format(
+            cpu_dict['idle'], cpu_dict['user'], cpu_dict['system'])
+        print(text)
+        counter = 1
+        for cpu_core in cpu_dict['cores']:
+            print()
+            text = 'Core {}:-'.format(counter)
+            print(text)
+            text = 'User: {} % \t System: {} % \t Idle: {} %'.format(
+                cpu_core['user'], cpu_core['system'], cpu_core['idle'])
+            print(text)
+            counter += 1
+    else:
+        text = 'Load Average: {} {} {} \t User: {} % \t System: {} %'.format(
+            cpu_dict['load_avg'][0], cpu_dict['load_avg'][1], cpu_dict['load_avg'][2], cpu_dict['user'], cpu_dict['system'])
+        print(text)
+        text = 'Idle: {} % \t I/O Wait: {} %'.format(
+            cpu_dict['idle'], cpu_dict['iowait'])
+        print(text)
+        counter = 1
+        for cpu_core in cpu_dict['cores']:
+            print()
+            text = 'Core {}:-'.format(counter)
+            print(text)
+            text = 'User: {} % \t System: {} % \t Idle: {} %'.format(
+                cpu_core['user'], cpu_core['system'], cpu_core['idle'])
+            print(text)
+            text = 'I/O Wait: {} %'.format(cpu_core['iowait'])
+            print(text)
+            counter += 1
 
 
 def memory():
     """
     Display detailed Memory usage data
     """
-    pass
+    g = core.Get()
+
+    text = 'Memory Usage:\n'
+    print(text)
+    memory_dict = g.memory()
+    text = 'Total: {:,} Bytes \t Available: {:,} Bytes \t Used(excl. Cache & buffer): {:,} Bytes ({}%)'.format(
+        memory_dict['total'], memory_dict['available'], memory_dict['used_excl'], memory_dict['percent'])
+    print(text)
+    text = 'Used (incl, Cache & Buffer): {:,} Bytes \t Free: {:,} Bytes'.format(
+        memory_dict['used_incl'], memory_dict['free'])
+    print(text)
 
 
 def process():
     """
     Display detailed Process usage data
     """
-    pass
+    g = core.Get()
+
+    text = 'Process Usage:'
+    print(text)
+    processes = g.process()
+    for process_dict in processes:
+        print()
+        text = 'PID: {} \t Name: {} \t User: {}'.format(
+            process_dict['pid'], process_dict['name'], process_dict['user'])
+        print(text)
+        text = 'Status: {} \t Created: {} seconds since the epoch \t Memory: {} %'.format(
+            process_dict['status'], process_dict['created'], process_dict['memory'])
+        print(text)
+        text = 'CPU: {} %'.format(process_dict['cpu'])
+        print(text)
 
 
 def storage():
     """
     Display detailed Storage usage data
     """
-    pass
+    g = core.Get()
+
+    text = 'Storage Usage:'
+    print(text)
+    storages = g.storage()
+    for storage_dict in storages:
+        print()
+        text = 'Device: {} \t Mounted: {} \t Type: {}'.format(
+            storage_dict['device'], storage_dict['mountpoint'], storage_dict['fstype'])
+        print(text)
+        text = 'Options: {} \t Total: {:,} Bytes \t Used: {:,} Bytes ({}%)'.format(
+            storage_dict['options'], storage_dict['total'], storage_dict['used'], storage_dict['percent'])
+        print(text)
+        text = 'Free: {:,} Bytes'.format(storage_dict['free'])
+        print(text)
 
 
 def network():
     """
     Display detailed Network usage data
     """
-    pass
+    g = core.Get()
+
+    text = 'Network Usage:'
+    print(text)
+    networks = g.network()
+    if os.name == 'nt':
+        for network_dict in networks:
+            print()
+            text = 'Interface: {} \t Bytes sent: {} \t Bytes received: {}'.format(
+                network_dict['interface'], network_dict['bytes_sent'], network_dict['bytes_recv'])
+            print(text)
+            text = 'Packets sent: {} \t Packets received: {} \t Errors in: {}'.format(
+                network_dict['packets_sent'], network_dict['packets_recv'], network_dict['errin'])
+            print(text)
+            text = 'Errors out: {} \t Dropped in: {} \t Dropped out: {}'.format(
+                network_dict['errout'], network_dict['dropin'], network_dict['dropout'])
+            print(text)
+    else:
+        for network_dict in networks:
+            print()
+            text = 'Interface: {} \t IP: {} \t Bytes sent: {}'.format(
+                network_dict['interface'], network_dict['ip'], network_dict['bytes_sent'])
+            print(text)
+            text = 'Bytes received: {} \t Packets sent: {} \t Packets received: {}'.format(
+                network_dict['bytes_recv'], network_dict['packets_sent'], network_dict['packets_recv'])
+            print(text)
+            text = 'Errors in: {} \t Errors out: {} \t Dropped in: {}'.format(
+                network_dict['errin'], network_dict['errout'], network_dict['dropin'])
+            print(text)
+            text = 'Dropped out: {}'.format(network_dict['dropout'])
+            print(text)
+
+    speed_dict = core.test_speed()
+
+    text = '\nDownload speed: {} \t Upload speed: {}'.format(
+        speed_dict['down_speed'], speed_dict['up_speed'])
+    print(text)
 
 
 def misc():
     """
     Display Miscellaneous usage data
     """
-    pass
+    g = core.Get()
+
+    text = 'Miscellaneous Usage:\n'
+    print(text)
+    text = 'OS: {} \t Uptime: {} seconds\n'.format(g.os(), g.uptime())
+    print(text)
+
+    text = 'Users:-'
+    print(text)
+    users = g.users()
+    for user_dict in users:
+        print()
+        text = 'Name: {} \t Session started: {} \t Host: {}'.format(
+            user_dict['name'], user_dict['sess_started'], user_dict['host'])
+        print(text)
+
+    text = '\nSwap:-\n'
+    print(text)
+    swap_dict = g.swap()
+    text = 'Total: {:,} Bytes \t Used: {:,} Bytes ({}%) \t Free: {:,} Bytes'.format(
+        swap_dict['total'], swap_dict['used'], swap_dict['percent'], swap_dict['free'])
+    print(text)
+    text = 'Swapped in: {:,} Bytes \t Swapped out: {:,} Bytes'.format(
+        swap_dict['sin'], swap_dict['sout'])
+    print(text)
 
 
 def show_limit():
