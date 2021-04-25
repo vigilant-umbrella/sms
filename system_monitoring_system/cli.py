@@ -148,6 +148,16 @@ Valid resource names are:
 """
         raise ArgumentError(msg)
 
+    password = keyring.get_password('sms_password', 'Administrator')
+    if password == None:
+        print('No Password set.\nSet a new password using `sms --update-password`.')
+        return
+
+    user_password = getpass.getpass()
+    if user_password != password:
+        print('\nWrong Password entered')
+        return
+
     if limit >= 100 or limit <= 0:
         msg = """
 Invalid limit entered.
@@ -191,6 +201,16 @@ Valid actions are:
  - remove
 """
         raise ArgumentError(msg)
+
+    password = keyring.get_password('sms_password', 'Administrator')
+    if password == None:
+        print('No Password set.\nSet a new password using `sms --update-password`.')
+        return
+
+    user_password = getpass.getpass()
+    if user_password != password:
+        print('\nWrong Password entered')
+        return
 
     if action == 'add':
         if len(args) != 2:
@@ -266,11 +286,12 @@ def update_password():
     """
     Modify administrator password
     """
-    user_old_password = getpass.getpass(prompt='Old Password: ')
     old_password = keyring.get_password('sms_password', 'Administrator')
-    if user_old_password != old_password:
-        print('\nWrong Password entered')
-        return
+    if old_password != None:
+        user_old_password = getpass.getpass(prompt='Old Password: ')
+        if user_old_password != old_password:
+            print('\nWrong Password entered')
+            return
 
     new_password = getpass.getpass(prompt='New Password: ')
     conf_new_password = getpass.getpass(prompt='Confirm New Password: ')
