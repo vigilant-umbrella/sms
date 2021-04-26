@@ -556,7 +556,7 @@ def set_notification_limit(settings):
                        layout, finalize=True, modal=True)
     while True:
         event, values = window.read()
-        if event in ("CPU", "Memory", "Storage", "Swap"):
+        if event in notif_dict:
             settings.set('limit', values)
             window.Element('msg').Update(visible=True)
         if event in ("Exit", sg.WIN_CLOSED):
