@@ -1,43 +1,87 @@
-# System Monitoring System
+## Installation
 
-## Development procedure-
+The easiest way to install the program on a Linux machine is using the provided `linux_install.sh` script.
+To run the script, type `./linux_install.sh` in the terminal.
 
-### Before making changes:
+The easiest way to install the program on a Windows machine is using the provided `windows_install.py` script.
+To run the script, type `python windows_install.py` in the terminal.
 
-- Create new git branch
+## Running the program binary
 
-  `git switch -c <branch-name>`
+To run the GUI program, double click on the SMS icon on the desktop. 
 
-- Start a virtual environment
+To run the CLI program, enter `sms` on the terminal followed by one of the following arguments.
 
-  `pipenv shell`
+A short description of each argument has been provided here and can also be accessed
+using `sms --help`.
+```
+    --summary
+      Display a summary of System usage data
 
-- Install updated python packages
+    --cpu
+      Display detailed CPU usage data
 
-  `pipenv install --dev`
+    --memory
+      Display detailed Memory usage data
 
-### Before putting changes in production (pushing to repo):
+    --process
+      Display detailed Process usage data
 
-- Run tests
+    --storage
+      Display detailed Storage usage data
 
-  `pytest tests`
+    --network
+      Display detailed Network usage data
 
-- Lock package dependencies
+    --misc
+      Display Miscellaneous usage data
 
-  `pipenv lock`
+    --show-limit
+      Display notification limits
 
-### To install a new Python package:
+    --update-limit
+      Update notification limits
 
-- Installing package necessary for application
+    --show-email
+      Display saved name and email address
 
-  `pipenv install <package-name>`
+    --update-email
 
-- Installing package needed only for development
+    --update-password
+      Modify administrator password
 
-  `pipenv install <package-name> --dev`
+    --send-email
+      Send email to saved email address
 
-### To run tests
+    --down-report
 
-- Run tests using pytest
+    --start-monitoring
 
-  `pytest tests`
+    --gui
+      Opens GUI application
+
+    -S
+      Display a summary of System usage data
+
+    -c
+      Display detailed CPU usage data
+
+    -M
+      Display detailed Memory usage data
+
+    -p
+      Display detailed Process usage data
+
+    -s
+      Display detailed Storage usage data
+
+    -n
+      Display detailed Network usage data
+
+    -m
+      Display Miscellaneous usage data
+
+    -g
+      Opens GUI application
+
+```
