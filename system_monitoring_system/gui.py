@@ -728,7 +728,6 @@ def authenticate(settings):
             event, values = window.read()
             if event in ("Exit", sg.WIN_CLOSED):
                 break
-
             if values[0] == "":
                 sg.popup(
                     "Blank input is not acceptable. Enter something and try again!",
@@ -997,6 +996,7 @@ def main():
 
     while True:
         event, values = window.read()
+        print(event, values)
         name_email = settings.get("email", None)
         try:
             if values[0] == "Settings Menu":
