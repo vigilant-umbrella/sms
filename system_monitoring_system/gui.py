@@ -436,13 +436,21 @@ def authenticate(settings):
             [sg.Button("Apply"), sg.Button("Exit")]
         ]
         window = sg.Window("NEW password", layout, finalize=True, modal=True)
-        event, values = window.read()
-        if values[0] == '':
-            sg.popup(
-                "Blank input is not acceptable. Enter something and try again!", title='Error')
-        keyring.set_password('sms_password', 'Administrator', values[0])
+        while True:
+            event, values = window.read()
+            if event in ("Exit", sg.WIN_CLOSED):
+                break
+
+            if values[0] == '':
+                sg.popup(
+                    "Blank input is not acceptable. Enter something and try again!", title='Error')
+            elif event in ("Apply"):
+                keyring.set_password('sms_password', 'Administrator', values[0])
+                sg.popup("NEW Administrator password saved!", title='Password saved')
+                window.close()
+                return True
         window.close()
-        return True
+        return False
     else:
         auth = False
         layout = [
@@ -667,6 +675,7 @@ def main():
 
     while True:
         event, values = window.read()
+        print(event, values)
         name_email = settings.get("email", None)
         try:
             if values[0] == "Settings Menu":
