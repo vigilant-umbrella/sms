@@ -4,10 +4,10 @@ sudo true
 
 DIRECTORY=/home/"$USER"/.sms
 if [ ! -d "$DIRECTORY" ]; then
-    sudo mkdir /home/"$USER"/.sms
+    sudo mkdir "$DIRECTORY"
 fi
 
-pip3 install -q pipenv
+sudo pip3 install -q pipenv
 
 pipenv install --ignore-pipfile
 pipenv run pyinstaller --onefile --name sms --clean --distpath . --log-level ERROR --hidden-import plyer.platforms.linux.notification system_monitoring_system/__main__.py
@@ -43,7 +43,15 @@ Icon=/home/$USER/.sms/sms_icon.png
     read menu_icon
     if [[ "$menu_icon" == "y" || "$menu_icon" == "Y" || "$menu_icon" == "yes" || "$menu_icon" == "Yes" ]]
     then
-        sudo cp /home/"$USER"/Desktop/SMS.desktop /home/"$USER"/.local/share/applications/
+        MENU_DIRECTORY=/home/"$USER"/.local/share
+        if [ ! -d "$MENU_DIRECTORY" ]; then
+            sudo mkdir "$MENU_DIRECTORY"
+        fi
+        MENU_DIRECTORY=/home/"$USER"/.local/share/applications
+        if [ ! -d "$MENU_DIRECTORY" ]; then
+            sudo mkdir "$MENU_DIRECTORY"
+        fi
+        sudo cp /home/"$USER"/Desktop/SMS.desktop "$MENU_DIRECTORY"
     fi
 fi
 
