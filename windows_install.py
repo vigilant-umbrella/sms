@@ -11,6 +11,7 @@ def create_directory():
 
 def create_executable():
     os.system('pip3 install -q pipenv')
+    os.system('pipenv lock')
     os.system('pipenv install --ignore-pipfile')
     os.system('pipenv run pyinstaller --onefile --name sms --clean --distpath . --log-level ERROR --hidden-import plyer.platforms.win.notification system_monitoring_system/__main__.py')
 
