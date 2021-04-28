@@ -28,7 +28,7 @@ def create_sms_folder():
                 with open(path, 'w') as f:
                     json.dump(settings, f)
     except PermissionError:
-        print('Run ./sms with sudo for the first time --> sudo ./sms')
+        print('Run sms with sudo for the first time --> sudo sms')
 
 
 if __name__ == '__main__':
