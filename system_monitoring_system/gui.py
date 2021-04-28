@@ -996,7 +996,6 @@ def main():
 
     while True:
         event, values = window.read()
-        print(event, values)
         name_email = settings.get("email", None)
         try:
             if values[0] == "Settings Menu":
