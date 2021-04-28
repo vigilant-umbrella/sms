@@ -948,14 +948,20 @@ def email_report(email, resource):
     if email["id"] is None and email["password"] is None:
         return
 
-    file = report.send_email(email["id"], email["password"], resource)
-    sg.popup(
-        "Email sent from "
-        + email["id"]
-        + " to the added emails with attachment "
-        + file,
-        title="Report sent successfully!",
-    )
+    try:
+        file = report.send_email(email["id"], email["password"], resource)
+        sg.popup(
+            "Email sent from "
+            + email["id"]
+            + " to the added emails with attachment "
+            + file,
+            title="Report sent successfully!",
+        )
+    except AuthenticationError:
+        sg.popup(
+            "Either of the following error occured: \n 1. Username or password do not match to an existing Google account. \n 2. Less secure app access is turned off.",
+            title="Error occured!"
+        )
 
 
 def main():
