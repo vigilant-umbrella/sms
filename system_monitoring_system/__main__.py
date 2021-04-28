@@ -17,9 +17,6 @@ def create_sms_folder():
             shutil.copy('./Montserrat-Regular.ttf', path)
             shutil.copy('./Montserrat-Bold.ttf', path)
             shutil.copy('./sms_icon.png', path)
-            shutil.copy('./Montserrat-Regular.ttf', path)
-            shutil.copy('./Montserrat-Bold.ttf', path)
-            shutil.copy('./sms_icon.png', path)
 
             path = os.path.join(os.path.expanduser('~'), '.sms', 'settings.json')
             if not os.path.exists(path) or not os.path.isfile(path):
