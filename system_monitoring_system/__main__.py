@@ -3,9 +3,37 @@ import fire
 import gui
 import monitoring
 import report
+import os
+import json
+import shutil
+
+
+def create_sms_folder():
+    path = os.path.join(os.path.expanduser('~'), '.sms')
+
+    try:
+        if not os.path.exists(path) or not os.path.isdir(path):
+            os.mkdir(path)
+            shutil.copy('./Montserrat-Regular.ttf', path)
+            shutil.copy('./Montserrat-Bold.ttf', path)
+            shutil.copy('./sms_icon.png', path)
+            shutil.copy('./Montserrat-Regular.ttf', path)
+            shutil.copy('./Montserrat-Bold.ttf', path)
+            shutil.copy('./sms_icon.png', path)
+
+            path = os.path.join(os.path.expanduser('~'), '.sms', 'settings.json')
+            if not os.path.exists(path) or not os.path.isfile(path):
+                settings = {'email': {}, 'limit': {'cpu': 75,
+                                                'memory': 50, 'storage': 60, 'swap': 80}}
+                with open(path, 'w') as f:
+                    json.dump(settings, f)
+    except PermissionError:
+        print('Run ./sms with sudo for the first time --> sudo ./sms')
 
 
 if __name__ == '__main__':
+    create_sms_folder()
+   
     commands = {
         '--summary': cli.summary,
         '--cpu': cli.cpu,
